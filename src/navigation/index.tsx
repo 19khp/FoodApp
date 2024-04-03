@@ -7,9 +7,9 @@ import {K_SIZE_26, K_SIZE_28, K_SIZE_30} from '../common';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {colors} from '../common/constants/color';
 import history from '../screens/history.tsx';
-import profile from '../screens/profile.tsx';
 import home from '../screens/home';
 import meals from '../screens/meals';
+import profile from '../screens/profile';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const BottomStack = () => {
@@ -28,7 +28,6 @@ const BottomStack = () => {
         name="home"
         component={home}
         options={{
-          tabBarLabel: '',
           headerShown: false,
           tabBarIcon: ({color}) => {
             return (
@@ -45,7 +44,7 @@ const BottomStack = () => {
         name="meals"
         component={meals}
         options={{
-          tabBarLabel: '',
+          headerShown: false,
           tabBarIcon: ({color}) => {
             return (
               <MaterialCommunityIcons
@@ -61,7 +60,6 @@ const BottomStack = () => {
         name="history"
         component={history}
         options={{
-          tabBarLabel: '',
           tabBarIcon: ({color}) => {
             return (
               <MaterialCommunityIcons
@@ -77,7 +75,7 @@ const BottomStack = () => {
         name="profile"
         component={profile}
         options={{
-          tabBarLabel: '',
+          headerShown: false,
           tabBarIcon: ({color}) => {
             return (
               <MaterialCommunityIcons
@@ -92,25 +90,12 @@ const BottomStack = () => {
     </Tab.Navigator>
   );
 };
-const HomeScreenStack = () => {
-  return (
-    <Stack.Navigator screenOptions={{headerShown: false}}>
-      <Stack.Screen name="BottomStack" component={BottomStack} />
-    </Stack.Navigator>
-  );
-};
-const ProfileStack = () => {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="BottomStack" component={BottomStack} />
-    </Stack.Navigator>
-  );
-};
+
 const Navigation = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
-        <Stack.Screen name="HomeScreenStack" component={HomeScreenStack} />
+        <Stack.Screen name="BottomStack" component={BottomStack} />
       </Stack.Navigator>
     </NavigationContainer>
   );

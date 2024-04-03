@@ -24,10 +24,9 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-import Navigation from "./src/navigation";
-
+import Navigation from './src/navigation';
 function App(): React.JSX.Element {
-  return <Navigation/>;
+  return <Navigation />;
 }
 
 const styles = StyleSheet.create({

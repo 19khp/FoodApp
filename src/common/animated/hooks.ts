@@ -14,6 +14,7 @@ export const useInterpolate = (
   input: number[],
   output: number[],
   type?: Animated.Extrapolate,
+  // @ts-ignore
 ) => useDerivedValue(() => interpolate(progress.value, input, output, type));
 
 /**
@@ -27,6 +28,7 @@ export const useInterpolateColor = (
 ) => {
   'worklet';
   return useDerivedValue(() =>
+    // @ts-ignore
     interpolateColor(progress.value, input, output, colorSpace),
   );
 };

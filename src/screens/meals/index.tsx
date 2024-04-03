@@ -1,12 +1,14 @@
 import React from 'react';
 import {TextBase} from '../../common';
-import {View} from 'react-native';
+import {SafeAreaView, View} from 'react-native';
 
 const Meals = () => {
   return (
-    <View>
-      <TextBase>Meals</TextBase>
-    </View>
+    <SafeAreaView>
+      <View>
+        <TextBase>Meals</TextBase>
+      </View>
+    </SafeAreaView>
   );
 };
 

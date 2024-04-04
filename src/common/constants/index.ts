@@ -61,6 +61,7 @@ export const K_SIZE_200 = 200;
 export const K_SIZE_210 = 210;
 export const K_SIZE_238 = 238;
 export const K_SIZE_260 = 260;
+export const K_SIZE_300 = 300;
 
 export const K_SIZE_SCALE_1 = sizeScale(1);
 export const K_SIZE_SCALE_2 = sizeScale(2);

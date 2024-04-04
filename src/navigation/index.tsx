@@ -1,15 +1,16 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import login from '../screens/login.tsx';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {K_SIZE_26, K_SIZE_28, K_SIZE_30} from '../common';
+import {K_SIZE_26, K_SIZE_30} from '../common';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {colors} from '../common/constants/color';
-import history from '../screens/history.tsx';
 import home from '../screens/home';
 import meals from '../screens/meals';
 import profile from '../screens/profile';
+import history from '../screens/history';
+import MealDetail from '../screens/meals/mealDetails';
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const BottomStack = () => {
@@ -29,12 +30,22 @@ const BottomStack = () => {
         component={home}
         options={{
           headerShown: false,
-          tabBarIcon: ({color}) => {
+          tabBarIcon: ({color, focused}) => {
             return (
               <MaterialCommunityIcons
                 name="home"
                 size={K_SIZE_30}
                 color={color}
+                style={{
+                  elevation: focused ? 11 : 0,
+                  shadowColor: focused ? colors.color_primary : 'transparent',
+                  shadowOffset: {
+                    width: 0,
+                    height: focused ? 6 : 0,
+                  },
+                  shadowOpacity: focused ? 0.4 : 0,
+                  shadowRadius: focused ? 10 : 0,
+                }}
               />
             );
           },
@@ -45,12 +56,22 @@ const BottomStack = () => {
         component={meals}
         options={{
           headerShown: false,
-          tabBarIcon: ({color}) => {
+          tabBarIcon: ({color, focused}) => {
             return (
               <MaterialCommunityIcons
                 name="food"
                 size={K_SIZE_26}
                 color={color}
+                style={{
+                  elevation: focused ? 11 : 0,
+                  shadowColor: focused ? colors.color_primary : 'transparent',
+                  shadowOffset: {
+                    width: 0,
+                    height: focused ? 6 : 0,
+                  },
+                  shadowOpacity: focused ? 0.4 : 0,
+                  shadowRadius: focused ? 10 : 0,
+                }}
               />
             );
           },
@@ -60,12 +81,23 @@ const BottomStack = () => {
         name="history"
         component={history}
         options={{
-          tabBarIcon: ({color}) => {
+          headerShown: false,
+          tabBarIcon: ({color, focused}) => {
             return (
               <MaterialCommunityIcons
                 name="history"
                 size={K_SIZE_30}
                 color={color}
+                style={{
+                  elevation: focused ? 11 : 0,
+                  shadowColor: focused ? colors.color_primary : 'transparent',
+                  shadowOffset: {
+                    width: 0,
+                    height: focused ? 6 : 0,
+                  },
+                  shadowOpacity: focused ? 0.4 : 0,
+                  shadowRadius: focused ? 10 : 0,
+                }}
               />
             );
           },
@@ -76,12 +108,22 @@ const BottomStack = () => {
         component={profile}
         options={{
           headerShown: false,
-          tabBarIcon: ({color}) => {
+          tabBarIcon: ({color, focused}) => {
             return (
               <MaterialCommunityIcons
-                name="account"
+                name="account-outline"
                 size={K_SIZE_30}
                 color={color}
+                style={{
+                  elevation: focused ? 11 : 0,
+                  shadowColor: focused ? colors.color_primary : 'transparent',
+                  shadowOffset: {
+                    width: 0,
+                    height: focused ? 6 : 0,
+                  },
+                  shadowOpacity: focused ? 0.4 : 0,
+                  shadowRadius: focused ? 10 : 0,
+                }}
               />
             );
           },
@@ -96,6 +138,7 @@ const Navigation = () => {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
         <Stack.Screen name="BottomStack" component={BottomStack} />
+        <Stack.Screen name="MealDetail" component={MealDetail} />
       </Stack.Navigator>
     </NavigationContainer>
   );

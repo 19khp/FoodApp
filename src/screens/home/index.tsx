@@ -1,5 +1,5 @@
 import React from 'react';
-import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import {SafeAreaView, StyleSheet, View} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import {Searchbar} from 'react-native-paper';
@@ -16,35 +16,10 @@ import {colors} from '../../common/constants/color';
 import CombosMenu from './components/CombosMenu';
 import {TextBase} from '../../common';
 
-const SecondRoute = () => (
-  <View
-    style={{
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 5,
-      },
-      shadowOpacity: 0.36,
-      shadowRadius: 6.68,
-
-      elevation: 11,
-    }}>
-    <View
-      style={{
-        backgroundColor: colors.color_white,
-        padding: K_PADDING_32,
-        borderRadius: K_PADDING_24,
-        overflow: 'hidden',
-      }}>
-      <Text>hi</Text>
-    </View>
-  </View>
-);
-
 const renderScene = SceneMap({
   combo: CombosMenu,
-  hot: SecondRoute,
-  discount: SecondRoute,
+  hot: CombosMenu,
+  discount: CombosMenu,
 });
 const Index = () => {
   const [index, setIndex] = React.useState(0);
@@ -113,16 +88,23 @@ const styles = StyleSheet.create({
     margin: K_MARGIN_32,
     backgroundColor: '#EFEEEE',
     paddingHorizontal: K_PADDING_24,
+    shadowColor: colors.color_black,
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+    shadowRadius: 20,
+    shadowOpacity: 0.05,
   },
   tabViewWrapper: {
     backgroundColor: colors.color_primary,
     shadowColor: colors.color_primary,
     shadowOffset: {
-      width: 0,
+      width: 6,
       height: 4,
     },
-    shadowRadius: 4,
-    shadowOpacity: 0.1,
+    shadowRadius: 7,
+    shadowOpacity: 0.3,
   },
 });
 export default Index;

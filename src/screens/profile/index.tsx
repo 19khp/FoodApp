@@ -22,8 +22,7 @@ import {
 import {colors} from '../../common/constants/color';
 import {RadioButton} from '../../common/components/radio-button';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
-const paymentMethods = [
+export const paymentMethods = [
   {
     id: 1,
     name: 'Thanh toán khi nhận hàng',

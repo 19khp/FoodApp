@@ -3,25 +3,36 @@ import {SafeAreaView, StyleSheet, View} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import {Searchbar} from 'react-native-paper';
-import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
+import {TabBar, TabView} from 'react-native-tab-view';
 import {
   K_MARGIN_32,
   K_PADDING_24,
   K_PADDING_32,
   K_SIZE_28,
   K_SIZE_8,
+  TextBase,
 } from '../../common';
 import {Typography} from '../../common/constants/typography-foundation';
 import {colors} from '../../common/constants/color';
 import CombosMenu from './components/CombosMenu';
-import {TextBase} from '../../common';
 
-const renderScene = SceneMap({
-  combo: CombosMenu,
-  hot: CombosMenu,
-  discount: CombosMenu,
-});
-const Index = () => {
+// const renderScene = SceneMap({
+//   combo: CombosMenu,
+//   hot: CombosMenu,
+//   discount: CombosMenu,
+// });
+
+const renderScene = ({route, navigation}: any) => {
+  switch (route.key) {
+    case 'combo':
+    case 'hot':
+    case 'discount':
+      return <CombosMenu navigation={navigation} />;
+    default:
+      return null;
+  }
+};
+const Index = ({navigation}: any) => {
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
     {key: 'combo', title: 'Combo'},
@@ -41,6 +52,7 @@ const Index = () => {
             name="cart-outline"
             color={colors.color_sub_text}
             size={K_SIZE_28}
+            onPress={() => navigation.navigate('Cart')}
           />
         </View>
       </View>
@@ -53,7 +65,7 @@ const Index = () => {
       <View style={styles.menuWrapper}>
         <TabView
           navigationState={{index, routes}}
-          renderScene={renderScene}
+          renderScene={props => renderScene({...props, navigation})}
           onIndexChange={setIndex}
           initialLayout={{width: 100}}
           renderTabBar={props => (

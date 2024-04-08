@@ -10,6 +10,7 @@ import {
   TextBase,
 } from '../../../../common';
 import {colors} from '../../../../common/constants/color';
+import {Utils} from '../../../../common/utils';
 
 const Meal = ({
   item,
@@ -20,17 +21,16 @@ const Meal = ({
 }) => {
   return (
     <TouchableOpacity style={styles.mealWrapper} onPress={onPress}>
-      <View style={styles.mealWrapper} onTouchEnd={onPress}>
+      <View style={styles.mealWrapper}>
         <View style={styles.mealContainer}>
           <Image
             style={{width: '100%', height: '40%'}}
             source={{
-              uri: 'https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?q=80&w=2864&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+              uri: item.image,
             }}
           />
           <View
             style={{
-              // paddingHorizontal: K_PADDING_32,
               width: 100,
             }}>
             <TextBase
@@ -45,7 +45,7 @@ const Meal = ({
               fontSize={K_FONT_SIZE_10}
               color={colors.color_primary}
               style={{marginTop: K_MARGIN_12}}>
-              {item.price} VNĐ
+              {Utils.formatCurrency(item.price)}
             </TextBase>
           </View>
         </View>
@@ -70,6 +70,7 @@ const styles = StyleSheet.create({
     width: 150,
     alignItems: 'center',
   },
+
 });
 
 export default Meal;

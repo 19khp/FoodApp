@@ -1,5 +1,5 @@
 import React from 'react';
-import {Image, StyleSheet, View} from 'react-native';
+import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {colors} from '../../constants/color';
 import {
   K_BORDER_RADIUS_26,
@@ -12,45 +12,47 @@ import {
 } from '../../constants';
 import {TextBase} from '../text';
 import {MealProps} from '../../../models/meal.ts';
+import {Utils} from '../../utils';
 
-const MealBox = ({item}: {item: MealProps}) => {
+const MealBox = ({item, onPress}: {item: MealProps; onPress: () => void}) => {
   return (
-    <View style={styles.mealWrapper}>
-      <View
-        style={{
-          backgroundColor: colors.color_white,
-          // height: 280,
-          overflow: 'hidden',
-          borderRadius: K_BORDER_RADIUS_26,
-        }}>
-        <Image
-          style={{width: 'auto', height: K_SIZE_120}}
-          source={{
-            uri: 'https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?q=80&w=2864&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-          }}
-        />
+    <TouchableOpacity style={styles.mealWrapper} onPress={onPress}>
+      <View style={styles.mealWrapper}>
         <View
           style={{
-            padding: K_PADDING_24,
-            width: 200,
+            backgroundColor: colors.color_white,
+            overflow: 'hidden',
+            borderRadius: K_BORDER_RADIUS_26,
           }}>
-          <TextBase
-            preset="title1"
-            textAlign={'center'}
-            fontSize={K_FONT_SIZE_17}>
-            {item.name}
-          </TextBase>
-          <TextBase
-            preset="title1"
-            textAlign={'center'}
-            fontSize={K_FONT_SIZE_15}
-            color={colors.color_primary}
-            style={{marginTop: K_MARGIN_12}}>
-            {item.price} VNĐ
-          </TextBase>
+          <Image
+            style={{width: 'auto', height: K_SIZE_120}}
+            source={{
+              uri: item.image,
+            }}
+          />
+          <View
+            style={{
+              padding: K_PADDING_24,
+              width: 200,
+            }}>
+            <TextBase
+              preset="title1"
+              textAlign={'center'}
+              fontSize={K_FONT_SIZE_17}>
+              {item.name}
+            </TextBase>
+            <TextBase
+              preset="title1"
+              textAlign={'center'}
+              fontSize={K_FONT_SIZE_15}
+              color={colors.color_primary}
+              style={{marginTop: K_MARGIN_12}}>
+              {Utils.formatCurrency(item.price)}
+            </TextBase>
+          </View>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 const styles = StyleSheet.create({

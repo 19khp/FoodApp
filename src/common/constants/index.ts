@@ -160,6 +160,7 @@ export const K_PADDING_46 = 46;
 export const K_PADDING_52 = 52;
 export const K_PADDING_56 = 56;
 export const K_PADDING_60 = 60;
+export const K_PADDING_120 = 120;
 
 //////////////////////////////////////////////////////
 

@@ -24,14 +24,17 @@ const Meal = ({
       <View style={styles.mealWrapper}>
         <View style={styles.mealContainer}>
           <Image
+            /* eslint-disable-next-line react-native/no-inline-styles */
             style={{width: '100%', height: '40%'}}
             source={{
               uri: item.image,
             }}
           />
           <View
+            /* eslint-disable-next-line react-native/no-inline-styles */
             style={{
-              width: 100,
+              width: '70%',
+              marginTop: K_MARGIN_12,
             }}>
             <TextBase
               preset="title1"
@@ -70,7 +73,6 @@ const styles = StyleSheet.create({
     width: 150,
     alignItems: 'center',
   },
-
 });
 
 export default Meal;

@@ -3,9 +3,7 @@ import {Image, StyleSheet, TextInput, View} from 'react-native';
 import {colors} from '../../common/constants/color';
 import {
   K_BORDER_WIDTH_1,
-  K_FONT_SIZE_12,
   K_MARGIN_32,
-  K_MARGIN_6,
   K_PADDING_12,
   K_SIZE_12,
   K_SIZE_32,
@@ -16,12 +14,14 @@ import logo from '../../assets/images/logo.png';
 import ButtonBase from '../../common/components/button';
 
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-const Login = ({navigation}: any) => {
+const SignUp = ({navigation}: any) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
   const [emailError, setEmailError] = useState('');
   const [isEmailValid, setIsEmailValid] = useState(false);
   const [isPasswordValid, setIsPasswordValid] = useState(false);
+  const [isNameValid, setIsNameValid] = useState(false);
 
   const handleEmailChange = (text: string) => {
     setEmail(text);
@@ -34,15 +34,25 @@ const Login = ({navigation}: any) => {
     setPassword(text);
     setIsPasswordValid(text.trim() !== '');
   };
+  const handleNameChange = (text: string) => {
+    setName(text);
+    setIsNameValid(text.trim() !== '');
+  };
 
-  const isButtonEnabled = isEmailValid && isPasswordValid;
+  const isButtonEnabled = isEmailValid && isPasswordValid && isNameValid;
   return (
     <View style={styles.container}>
       <View style={styles.contentContainer}>
         <Image source={logo} style={styles.image} resizeMode="contain" />
         <View style={{width: '100%', padding: K_MARGIN_32}}>
-          <TextBase>Đăng nhập</TextBase>
+          <TextBase>Đăng ký</TextBase>
           <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Tên"
+              value={name}
+              onChangeText={handleNameChange}
+            />
             <TextInput
               style={[styles.input, emailError ? styles.inputError : null]}
               placeholder="Email"
@@ -61,19 +71,13 @@ const Login = ({navigation}: any) => {
               value={password}
               onChangeText={handlePasswordChange}
             />
-            <TextBase
-              text="Quên mật khẩu?"
-              color={colors.color_primary}
-              fontSize={K_FONT_SIZE_12}
-              style={{marginTop: K_MARGIN_6}}
-            />
           </View>
           <View style={styles.buttonContainer}>
             <ButtonBase
-              title="Đăng nhập"
+              title="Đăng ký"
               style={{paddingHorizontal: K_PADDING_12}}
               disabled={!isButtonEnabled}
-              onPress={() => navigation.navigate('BottomStack')}
+              onPress={() => navigation.navigate('Login')}
             />
           </View>
         </View>
@@ -122,4 +126,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Login;
+export default SignUp;

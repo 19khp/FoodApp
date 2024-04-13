@@ -13,20 +13,23 @@ const ButtonBase = ({
   onPress,
   title,
   buttonColor = colors.color_primary,
+  disabled,
   style,
 }: {
   onPress?: () => void;
   title: string;
   buttonColor?: string;
+  disabled?: boolean;
   style?: ViewStyle;
 }) => {
   return (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity onPress={disabled ? () => {} : onPress}>
       <View
         // @ts-ignore
         style={[
+          // eslint-disable-next-line react-native/no-inline-styles
           {
-            backgroundColor: buttonColor,
+            backgroundColor: disabled ? colors.color_sub_text_2 : buttonColor,
             borderRadius: K_BORDER_RADIUS_20,
             paddingHorizontal: K_PADDING_20,
             paddingVertical: K_PADDING_12,

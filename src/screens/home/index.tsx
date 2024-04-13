@@ -1,5 +1,5 @@
 import React from 'react';
-import {SafeAreaView, StyleSheet, View} from 'react-native';
+import {Image, SafeAreaView, StyleSheet, View} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import {Searchbar} from 'react-native-paper';
@@ -8,9 +8,8 @@ import {
   K_MARGIN_32,
   K_PADDING_24,
   K_PADDING_32,
+  K_SIZE_26,
   K_SIZE_28,
-  K_SIZE_8,
-  TextBase,
 } from '../../common';
 import {Typography} from '../../common/constants/typography-foundation';
 import {colors} from '../../common/constants/color';
@@ -21,6 +20,8 @@ import CombosMenu from './components/CombosMenu';
 //   hot: CombosMenu,
 //   discount: CombosMenu,
 // });
+// @ts-ignore
+import logo from '../../assets/images/logo.png';
 
 const renderScene = ({route, navigation}: any) => {
   switch (route.key) {
@@ -44,10 +45,14 @@ const Index = ({navigation}: any) => {
     <SafeAreaView style={{backgroundColor: colors.color_background}}>
       <View style={styles.appBarWrapper}>
         <View style={{width: '70%'}}>
-          <TextBase preset="h4">Bữa ăn ngon cho bạn</TextBase>
+          <Image
+            source={logo}
+            style={{height: 100, aspectRatio: 2.2}}
+            resizeMode="contain"
+          />
         </View>
         <View
-          style={{width: '30%', alignItems: 'flex-end', paddingTop: K_SIZE_8}}>
+          style={{width: '30%', alignItems: 'flex-end', paddingTop: K_SIZE_26}}>
           <MaterialCommunityIcons
             name="cart-outline"
             color={colors.color_sub_text}

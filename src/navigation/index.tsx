@@ -3,12 +3,17 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {
+  K_BORDER_RADIUS_20,
   K_FONT_SIZE_17,
   K_MARGIN_20,
   K_MARGIN_8,
+  K_PADDING_12,
+  K_PADDING_4,
+  K_SIZE_10,
   K_SIZE_24,
   K_SIZE_26,
   K_SIZE_30,
+  TextBase,
 } from '../common';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {colors} from '../common/constants/color';
@@ -19,6 +24,10 @@ import history from '../screens/history';
 import MealDetail from '../screens/meals/mealDetails';
 import Cart from '../screens/cart';
 import Checkout from '../screens/checkout';
+import Login from '../screens/login';
+import WelcomeScreen from '../screens/welcome-screen';
+import SignUp from '../screens/sign-up';
+import {StyleSheet, TouchableOpacity} from 'react-native';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -37,6 +46,13 @@ const CartButton = ({navigation}: any) => (
     style={{marginRight: K_MARGIN_20}}
     onPress={() => navigation.navigate('Cart')}
   />
+);
+const SkipButton = ({navigation}: any) => (
+  <TouchableOpacity
+    onPress={() => navigation.navigate('BottomStack')}
+    style={styles.touchableOpacity}>
+    <TextBase fontSize={K_SIZE_10}>Bỏ qua</TextBase>
+  </TouchableOpacity>
 );
 const BottomStack = () => {
   return (
@@ -161,8 +177,49 @@ const BottomStack = () => {
 const Navigation = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{headerShown: false}}>
+      <Stack.Navigator
+        screenOptions={{headerShown: false}}
+        initialRouteName="WelcomeScreen">
         <Stack.Screen name="BottomStack" component={BottomStack} />
+        <Stack.Screen
+          name="Login"
+          component={Login}
+          options={({navigation}) => ({
+            title: '',
+            headerShown: true,
+            headerTitleStyle: {fontSize: K_FONT_SIZE_17},
+            headerBackTitleVisible: false,
+            headerStyle: {backgroundColor: colors.color_white},
+            headerShadowVisible: false,
+            headerLeft: () => <CustomBackButton navigation={navigation} />,
+          })}
+        />
+        <Stack.Screen
+          name="SignUp"
+          component={SignUp}
+          options={({navigation}) => ({
+            title: '',
+            headerShown: true,
+            headerTitleStyle: {fontSize: K_FONT_SIZE_17},
+            headerBackTitleVisible: false,
+            headerStyle: {backgroundColor: colors.color_white},
+            headerShadowVisible: false,
+            headerLeft: () => <CustomBackButton navigation={navigation} />,
+          })}
+        />
+        <Stack.Screen
+          name="WelcomeScreen"
+          component={WelcomeScreen}
+          options={({navigation}) => ({
+            title: '',
+            headerShown: true,
+            headerTitleStyle: {fontSize: K_FONT_SIZE_17},
+            headerBackTitleVisible: false,
+            headerStyle: {backgroundColor: colors.color_white},
+            headerShadowVisible: false,
+            headerRight: () => <SkipButton navigation={navigation} />,
+          })}
+        />
         <Stack.Screen
           name="MealDetail"
           component={MealDetail}
@@ -207,5 +264,12 @@ const Navigation = () => {
     </NavigationContainer>
   );
 };
-
+const styles = StyleSheet.create({
+  touchableOpacity: {
+    backgroundColor: colors.color_background,
+    paddingVertical: K_PADDING_4,
+    paddingHorizontal: K_PADDING_12,
+    borderRadius: K_BORDER_RADIUS_20,
+  },
+});
 export default Navigation;

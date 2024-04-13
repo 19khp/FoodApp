@@ -1,6 +1,7 @@
 import {Platform, StyleSheet} from 'react-native';
 import {FontDefault} from '../font';
 import {
+  K_FONT_SIZE_14,
   K_FONT_SIZE_15,
   K_FONT_SIZE_17,
   K_FONT_SIZE_22,
@@ -13,8 +14,8 @@ import {
   K_SIZE_34,
   K_SIZE_36,
   K_SIZE_40,
-  K_SIZE_64,
-} from '../index.ts';
+  K_SIZE_64
+} from "../index.ts";
 import {colors} from '../color';
 
 export const K_IS_IOS = Platform.OS === 'ios';
@@ -35,9 +36,16 @@ export const Typography = StyleSheet.create({
   },
   title1: {
     fontFamily: FontDefault.primary,
-    fontSize: K_FONT_SIZE_22,
-    lineHeight: K_SIZE_32,
+    fontSize: K_FONT_SIZE_14,
+    lineHeight: K_SIZE_24,
     fontWeight: K_IS_IOS ? '600' : '800',
+    color: colors.color_black,
+  },
+  title2: {
+    fontFamily: FontDefault.primary,
+    fontSize: K_FONT_SIZE_14,
+    lineHeight: K_SIZE_24,
+    fontWeight: '400',
     color: colors.color_black,
   },
   caption1: {

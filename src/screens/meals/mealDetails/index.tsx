@@ -1,15 +1,16 @@
 import React, {useState} from 'react';
 import {Image, SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {
-  K_BORDER_RADIUS_26,
+  K_BORDER_RADIUS_26, K_MARGIN_100, K_MARGIN_120,
+  K_MARGIN_16,
   K_MARGIN_24,
   K_MARGIN_32,
   K_MARGIN_80,
   K_PADDING_32,
   K_SIZE_20,
   K_SIZE_26,
-  TextBase,
-} from '../../../common';
+  TextBase
+} from "../../../common";
 import {colors} from '../../../common/constants/color';
 import {Utils} from '../../../common/utils';
 import QuantitySelector from '../../../common/components/quantity-selector';
@@ -48,7 +49,7 @@ const MealDetail = ({route, navigation}: any) => {
 
           <TextBase preset={'caption1'}>{item.des}</TextBase>
         </View>
-        <View style={{marginBottom: K_MARGIN_80, marginTop: K_MARGIN_32}}>
+        <View style={{marginBottom: K_MARGIN_120, marginTop: K_MARGIN_32}}>
           <TextBase
             fontSize={K_SIZE_20}
             style={{marginBottom: K_MARGIN_24}}
@@ -56,7 +57,7 @@ const MealDetail = ({route, navigation}: any) => {
             Đánh giá
           </TextBase>
           <RatingBox />
-          <RatingBox isLast/>
+          <RatingBox isLast />
         </View>
       </ScrollView>
       <View style={styles.buttonContainer}>
@@ -64,7 +65,8 @@ const MealDetail = ({route, navigation}: any) => {
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
-            marginVertical: K_MARGIN_24,
+            marginVertical: K_MARGIN_16,
+            alignItems: 'center',
           }}>
           <TextBase color={colors.color_primary} fontSize={K_SIZE_20}>
             {Utils.formatCurrency(Number(item.price) * Number(quantity))}

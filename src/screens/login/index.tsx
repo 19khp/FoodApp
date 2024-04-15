@@ -46,6 +46,7 @@ const Login = ({navigation}: any) => {
             <TextInput
               style={[styles.input, emailError ? styles.inputError : null]}
               placeholder="Email"
+              placeholderTextColor={colors.color_sub_text}
               value={email}
               onChangeText={handleEmailChange}
             />
@@ -57,6 +58,7 @@ const Login = ({navigation}: any) => {
             <TextInput
               style={styles.input}
               placeholder="Mật khẩu"
+              placeholderTextColor={colors.color_sub_text}
               secureTextEntry={true}
               value={password}
               onChangeText={handlePasswordChange}
@@ -108,7 +110,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   input: {
-    height: K_SIZE_32,
+    color: colors.color_black,
     borderBottomWidth: K_BORDER_WIDTH_1,
     borderColor: colors.color_sub_text_2,
     marginBottom: 10,
@@ -118,6 +120,7 @@ const styles = StyleSheet.create({
     borderColor: colors.color_primary,
   },
   errorText: {
+    fontWeight: 'normal',
     color: colors.color_primary,
   },
 });

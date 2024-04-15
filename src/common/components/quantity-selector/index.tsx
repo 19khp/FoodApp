@@ -80,7 +80,7 @@ const styles = {
     marginRight: 10,
   },
   quantityInput: {
-    height: K_SIZE_26,
+    colors: colors.color_black,
     textAlign: 'center',
     marginRight: 10,
   },

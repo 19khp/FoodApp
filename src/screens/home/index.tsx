@@ -111,7 +111,8 @@ const styles = StyleSheet.create({
       height: 6,
     },
     shadowRadius: 20,
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.1,
+    elevation: 6,
   },
   tabViewWrapper: {
     backgroundColor: colors.color_primary,

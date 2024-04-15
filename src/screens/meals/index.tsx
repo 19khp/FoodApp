@@ -6,7 +6,7 @@ import {
   K_MARGIN_16,
   K_MARGIN_32,
   K_MARGIN_4,
-  K_MARGIN_6,
+  K_MARGIN_6, K_PADDING_10,
   K_PADDING_12,
   K_PADDING_24,
   K_PADDING_32,
@@ -15,8 +15,8 @@ import {
   K_SIZE_20,
   K_SIZE_26,
   K_SIZE_SCALE_10,
-  TextBase,
-} from '../../common';
+  TextBase
+} from "../../common";
 import {
   FlatList,
   SafeAreaView,
@@ -247,6 +247,7 @@ const Meals = ({navigation}: any) => {
             justifyContent: 'space-between',
             alignItems: 'center',
             paddingHorizontal: K_PADDING_24,
+            paddingTop: K_PADDING_10,
           }}>
           <Searchbar
             placeholder="Search"
@@ -258,6 +259,7 @@ const Meals = ({navigation}: any) => {
             name="filter-variant"
             size={K_SIZE_26}
             onPress={() => setModalVisible(true)}
+            color={colors.color_black}
           />
         </View>
         <View style={styles.menuWrapper}>
@@ -315,6 +317,7 @@ const styles = StyleSheet.create({
     },
     shadowRadius: 7,
     shadowOpacity: 0.3,
+    elevation: 11
   },
   flatListWrapper: {
     backgroundColor: colors.color_background,

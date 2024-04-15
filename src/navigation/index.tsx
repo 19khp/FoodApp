@@ -13,6 +13,7 @@ import {
   K_SIZE_24,
   K_SIZE_26,
   K_SIZE_30,
+  K_SIZE_80,
   TextBase,
 } from '../common';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -28,6 +29,8 @@ import Login from '../screens/login';
 import WelcomeScreen from '../screens/welcome-screen';
 import SignUp from '../screens/sign-up';
 import {StyleSheet, TouchableOpacity} from 'react-native';
+import Details from '../screens/profile/details';
+import ChangePassword from '../screens/profile/change-password';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -37,6 +40,7 @@ const CustomBackButton = ({navigation}: any) => (
     size={K_SIZE_30}
     style={{marginLeft: K_MARGIN_8}}
     onPress={() => navigation.goBack()}
+    color={colors.color_black}
   />
 );
 const CartButton = ({navigation}: any) => (
@@ -45,6 +49,7 @@ const CartButton = ({navigation}: any) => (
     size={K_SIZE_24}
     style={{marginRight: K_MARGIN_20}}
     onPress={() => navigation.navigate('Cart')}
+    color={colors.color_black}
   />
 );
 const SkipButton = ({navigation}: any) => (
@@ -62,8 +67,9 @@ const BottomStack = () => {
         tabBarShowLabel: false,
         tabBarActiveTintColor: colors.color_primary,
         tabBarStyle: {
-          backgroundColor: 'transparent',
+          backgroundColor: colors.color_background,
           borderTopWidth: 0,
+          height: K_SIZE_80,
         },
       }}>
       <Tab.Screen
@@ -230,6 +236,7 @@ const Navigation = () => {
             headerBackTitleVisible: false,
             headerStyle: {backgroundColor: colors.color_background},
             headerShadowVisible: false,
+            headerTitleAlign: 'center',
             headerLeft: () => <CustomBackButton navigation={navigation} />,
             headerRight: () => <CartButton navigation={navigation} />,
           })}
@@ -240,6 +247,7 @@ const Navigation = () => {
           options={({navigation}) => ({
             title: 'Giỏ hàng',
             headerShown: true,
+            headerTitleAlign: 'center',
             headerTitleStyle: {fontSize: K_FONT_SIZE_17},
             headerBackTitleVisible: false,
             headerStyle: {backgroundColor: colors.color_background},
@@ -253,6 +261,35 @@ const Navigation = () => {
           options={({navigation}) => ({
             title: 'Thanh toán',
             headerShown: true,
+            headerTitleAlign: 'center',
+            headerTitleStyle: {fontSize: K_FONT_SIZE_17},
+            headerBackTitleVisible: false,
+            headerStyle: {backgroundColor: colors.color_background},
+            headerShadowVisible: false,
+            headerLeft: () => <CustomBackButton navigation={navigation} />,
+          })}
+        />
+        <Stack.Screen
+          name="ProfileDetails"
+          component={Details}
+          options={({navigation}) => ({
+            title: 'Sửa thông tin',
+            headerShown: true,
+            headerTitleAlign: 'center',
+            headerTitleStyle: {fontSize: K_FONT_SIZE_17},
+            headerBackTitleVisible: false,
+            headerStyle: {backgroundColor: colors.color_background},
+            headerShadowVisible: false,
+            headerLeft: () => <CustomBackButton navigation={navigation} />,
+          })}
+        />
+        <Stack.Screen
+          name="ChangePassword"
+          component={ChangePassword}
+          options={({navigation}) => ({
+            title: 'Đổi mật khẩu',
+            headerShown: true,
+            headerTitleAlign: 'center',
             headerTitleStyle: {fontSize: K_FONT_SIZE_17},
             headerBackTitleVisible: false,
             headerStyle: {backgroundColor: colors.color_background},

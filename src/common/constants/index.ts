@@ -195,6 +195,8 @@ export const K_MARGIN_40 = 40;
 export const K_MARGIN_42 = 42;
 export const K_MARGIN_60 = 60;
 export const K_MARGIN_80 = 80;
+export const K_MARGIN_100 = 100;
+export const K_MARGIN_120 = 120;
 
 //////////////////////////////////////////////////////
 

@@ -1,5 +1,11 @@
 import React, {useState} from 'react';
-import {Image, SafeAreaView, StyleSheet, View} from 'react-native';
+import {
+  Image,
+  SafeAreaView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {
   K_BORDER_RADIUS_20,
   K_BORDER_WIDTH_1,
@@ -11,10 +17,13 @@ import {
   K_MARGIN_16,
   K_PADDING_12,
   K_PADDING_16,
+  K_PADDING_20,
   K_PADDING_24,
   K_PADDING_32,
+  K_PADDING_60,
   K_SIZE_10,
   K_SIZE_20,
+  K_SIZE_24,
   K_SIZE_60,
   K_SIZE_SCALE_15,
   TextBase,
@@ -22,6 +31,9 @@ import {
 import {colors} from '../../common/constants/color';
 import {RadioButton} from '../../common/components/radio-button';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import CustomModal from '../../common/components/modal';
+import ButtonBase from '../../common/components/button';
+
 export const paymentMethods = [
   {
     id: 1,
@@ -59,20 +71,75 @@ export const paymentMethods = [
     ),
   },
 ];
-const Index = () => {
+const Index = ({navigation}: any) => {
   const [selectedMethod, setSelectedMethod] = useState<number | null>(0);
-
+  const [modalVisible, setModalVisible] = useState(false);
   const handleRadioButtonToggle = (index: number) => {
     setSelectedMethod(index);
   };
   return (
     <SafeAreaView>
+      <CustomModal
+        visible={modalVisible}
+        closeVisible={false}
+        onClose={() => setModalVisible(false)}>
+        <View style={{marginBottom: K_PADDING_60}}>
+          <View
+            onTouchEnd={() => {
+              navigation.navigate('ProfileDetails');
+              setModalVisible(false);
+            }}
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              paddingTop: K_PADDING_20,
+            }}>
+            <TextBase text="Sửa thông tin" />
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={K_SIZE_24}
+              color={colors.color_black}
+            />
+          </View>
+          <View
+            onTouchEnd={() => {
+              navigation.navigate('ChangePassword');
+              setModalVisible(false);
+            }}
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              paddingTop: K_PADDING_20,
+            }}>
+            <TextBase text="Đổi mật khẩu" />
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={K_SIZE_24}
+              color={colors.color_black}
+            />
+          </View>
+        </View>
+      </CustomModal>
       <View style={{padding: K_PADDING_32}}>
         <View>
-          <View>
+          <View
+            style={{
+              justifyContent: 'space-between',
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
             <TextBase preset="title1" fontSize={K_FONT_SIZE_17}>
               Thông tin
             </TextBase>
+            <TouchableOpacity onPress={() => setModalVisible(true)}>
+              <TextBase
+                text="Chỉnh sửa"
+                fontSize={K_FONT_SIZE_10}
+                color={colors.color_primary}
+              />
+            </TouchableOpacity>
           </View>
 
           <View style={styles.boxWrapper}>
@@ -104,7 +171,7 @@ const Index = () => {
           </View>
         </View>
         <View style={{height: K_SIZE_60}} />
-        <View>
+        <View style={{marginBottom: K_PADDING_60}}>
           <TextBase preset="title1" fontSize={K_FONT_SIZE_17}>
             Phương thức thanh toán
           </TextBase>
@@ -141,6 +208,7 @@ const Index = () => {
             </View>
           </View>
         </View>
+        <ButtonBase title="Đăng xuất" />
       </View>
     </SafeAreaView>
   );

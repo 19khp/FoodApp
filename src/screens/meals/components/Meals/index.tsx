@@ -6,7 +6,10 @@ import {
   K_BORDER_RADIUS_26,
   K_FONT_SIZE_10,
   K_FONT_SIZE_15,
+  K_MARGIN_10,
   K_MARGIN_12,
+  K_PADDING_12,
+  K_PADDING_24,
   TextBase,
 } from '../../../../common';
 import {colors} from '../../../../common/constants/color';
@@ -37,6 +40,7 @@ const Meal = ({
               marginTop: K_MARGIN_12,
             }}>
             <TextBase
+              numberOfLines={3}
               preset="title1"
               textAlign={'center'}
               fontSize={K_FONT_SIZE_15}>
@@ -47,7 +51,7 @@ const Meal = ({
               textAlign={'center'}
               fontSize={K_FONT_SIZE_10}
               color={colors.color_primary}
-              style={{marginTop: K_MARGIN_12}}>
+              style={{marginTop: K_MARGIN_10}}>
               {Utils.formatCurrency(item.price)}
             </TextBase>
           </View>
@@ -72,6 +76,7 @@ const styles = StyleSheet.create({
     height: 200,
     width: 150,
     alignItems: 'center',
+    paddingBottom: K_PADDING_24,
   },
 });
 

@@ -3,12 +3,15 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {
+  K_BORDER_RADIUS_100,
   K_BORDER_RADIUS_20,
+  K_FONT_SIZE_10,
   K_FONT_SIZE_17,
   K_MARGIN_20,
   K_MARGIN_8,
   K_PADDING_12,
   K_PADDING_4,
+  K_PADDING_8,
   K_SIZE_10,
   K_SIZE_24,
   K_SIZE_26,
@@ -28,12 +31,15 @@ import Checkout from '../screens/checkout';
 import Login from '../screens/login';
 import WelcomeScreen from '../screens/welcome-screen';
 import SignUp from '../screens/sign-up';
-import {StyleSheet, TouchableOpacity} from 'react-native';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import Details from '../screens/profile/details';
 import ChangePassword from '../screens/profile/change-password';
+import {useSelector} from 'react-redux';
+import {selectCheckoutCart} from '../stores/checkoutSlice.ts';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+
 const CustomBackButton = ({navigation}: any) => (
   <MaterialCommunityIcons
     name="chevron-left"
@@ -43,18 +49,39 @@ const CustomBackButton = ({navigation}: any) => (
     color={colors.color_black}
   />
 );
-const CartButton = ({navigation}: any) => (
-  <MaterialCommunityIcons
-    name="cart-outline"
-    size={K_SIZE_24}
-    style={{marginRight: K_MARGIN_20}}
-    onPress={() => navigation.navigate('Cart')}
-    color={colors.color_black}
-  />
-);
+const CartButton = ({navigation}: any) => {
+  const selectedMeals = useSelector(selectCheckoutCart);
+  return (
+    <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
+      <View style={{alignItems: 'center', position: 'relative'}}>
+        <MaterialCommunityIcons
+          name="cart-outline"
+          size={K_SIZE_24}
+          style={{marginRight: K_MARGIN_20}}
+          color={colors.color_black}
+        />
+        <View
+          style={{
+            backgroundColor: colors.color_white,
+            paddingHorizontal: K_PADDING_8,
+            borderRadius: K_BORDER_RADIUS_100,
+            bottom: K_PADDING_12,
+          }}>
+          <TextBase
+            text={selectedMeals.length.toString()}
+            color={colors.color_primary}
+            fontSize={K_FONT_SIZE_10}
+          />
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};
 const SkipButton = ({navigation}: any) => (
   <TouchableOpacity
-    onPress={() => navigation.navigate('BottomStack')}
+    onPress={() => {
+      navigation.navigate('BottomStack');
+    }}
     style={styles.touchableOpacity}>
     <TextBase fontSize={K_SIZE_10}>Bỏ qua</TextBase>
   </TouchableOpacity>

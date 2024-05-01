@@ -13,8 +13,6 @@ import {
   K_MARGIN_16,
   K_MARGIN_24,
   K_MARGIN_8,
-  K_PADDING_10,
-  K_PADDING_14,
   K_PADDING_20,
   K_PADDING_32,
   K_PADDING_8,
@@ -24,11 +22,24 @@ import {
 import {colors} from '../../../common/constants/color';
 import ButtonBase from '../../../common/components/button';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {fetchChangePass} from '../../../hooks/server/useChangePassword.ts';
 
-const ChangePassword = () => {
+const ChangePassword = (navigation: any) => {
   const [secureCurrPassword, setSecureCurrPassword] = useState<boolean>(true);
+  const [currPassword, setCurrPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [reNewPassword, setReNewPassword] = useState('');
   const [secureNewPassword, setSecureNewPassword] = useState<boolean>(true);
   const [secureReNewPassword, setSecureReNewPassword] = useState<boolean>(true);
+  const handleChangePassword = async (navigation: any) => {
+    const res = await fetchChangePass({
+      email: '',
+      password: secureReNewPassword,
+    });
+    if (res) {
+      navigation.navigate('Login');
+    }
+  };
   return (
     <SafeAreaView>
       <View style={{padding: K_PADDING_32}}>
@@ -46,8 +57,8 @@ const ChangePassword = () => {
               secureTextEntry={secureCurrPassword}
               placeholder="Nhập mật khẩu hiện tại"
               placeholderTextColor={colors.color_sub_text}
-              // value={'số 12 thái hà'}
-              // onChangeText={handleNameChange}
+              value={currPassword}
+              onChangeText={setCurrPassword}
             />
             <MaterialCommunityIcons
               name={`${secureCurrPassword ? 'eye' : 'eye-off'}`}
@@ -71,8 +82,8 @@ const ChangePassword = () => {
               secureTextEntry={secureNewPassword}
               placeholder="Nhập mật khẩu mới"
               placeholderTextColor={colors.color_sub_text}
-              // value={'số 12 thái hà'}
-              // onChangeText={handleNameChange}
+              value={newPassword}
+              onChangeText={setNewPassword}
             />
             <MaterialCommunityIcons
               name={`${secureNewPassword ? 'eye' : 'eye-off'}`}
@@ -96,8 +107,8 @@ const ChangePassword = () => {
               secureTextEntry={secureReNewPassword}
               placeholder="Nhập lại mật khẩu mới"
               placeholderTextColor={colors.color_sub_text}
-              // value={'số 12 thái hà'}
-              // onChangeText={handleNameChange}
+              value={reNewPassword}
+              onChangeText={setReNewPassword}
             />
             <MaterialCommunityIcons
               name={`${secureReNewPassword ? 'eye' : 'eye-off'}`}
@@ -108,7 +119,16 @@ const ChangePassword = () => {
           </View>
         </View>
 
-        <ButtonBase title="Đổi mật khẩu" style={{marginTop: K_MARGIN_24}} />
+        <ButtonBase
+          title="Đổi mật khẩu"
+          style={{marginTop: K_MARGIN_24}}
+          disabled={
+            currPassword.length === 0 ||
+            newPassword.length === 0 ||
+            reNewPassword.length === 0
+          }
+          onPress={() => handleChangePassword(navigation)}
+        />
       </View>
     </SafeAreaView>
   );

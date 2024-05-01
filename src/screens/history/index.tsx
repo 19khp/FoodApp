@@ -31,7 +31,7 @@ const Index = ({navigation}: any) => {
         <ButtonBase
           style={{marginTop: K_MARGIN_24}}
           title="Đặt ngay"
-          onPress={() => navigation.navigate('Login')}
+          onPress={() => navigation.navigate('meals')}
         />
       </View>
     </SafeAreaView>

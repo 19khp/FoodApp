@@ -23,7 +23,7 @@ const ButtonBase = ({
   style?: ViewStyle;
 }) => {
   return (
-    <TouchableOpacity onPress={disabled ? () => {} : onPress}>
+    <TouchableOpacity onPress={onPress} disabled={disabled}>
       <View
         // @ts-ignore
         style={[

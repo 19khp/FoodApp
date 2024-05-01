@@ -1,5 +1,11 @@
 import React, {useState} from 'react';
-import {Image, StyleSheet, TextInput, View} from 'react-native';
+import {
+  ActivityIndicator,
+  Image,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 import {colors} from '../../common/constants/color';
 import {
   K_BORDER_WIDTH_1,
@@ -8,13 +14,14 @@ import {
   K_MARGIN_6,
   K_PADDING_12,
   K_SIZE_12,
-  K_SIZE_32,
   TextBase,
 } from '../../common';
 // @ts-ignore
 import logo from '../../assets/images/logo.png';
 import ButtonBase from '../../common/components/button';
-
+import useLogin from '../../hooks/server/useLogin.ts';
+import Spinner from 'react-native-loading-spinner-overlay';
+import {Authorization} from '../../common/utils/auth.ts';
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const Login = ({navigation}: any) => {
   const [email, setEmail] = useState('');
@@ -22,7 +29,8 @@ const Login = ({navigation}: any) => {
   const [emailError, setEmailError] = useState('');
   const [isEmailValid, setIsEmailValid] = useState(false);
   const [isPasswordValid, setIsPasswordValid] = useState(false);
-
+  Authorization.clearToken();
+  const {handleLogin, loading} = useLogin();
   const handleEmailChange = (text: string) => {
     setEmail(text);
     const isValid = emailRegex.test(text);
@@ -38,6 +46,7 @@ const Login = ({navigation}: any) => {
   const isButtonEnabled = isEmailValid && isPasswordValid;
   return (
     <View style={styles.container}>
+      <Spinner visible={loading} />
       <View style={styles.contentContainer}>
         <Image source={logo} style={styles.image} resizeMode="contain" />
         <View style={{width: '100%', padding: K_MARGIN_32}}>
@@ -75,7 +84,7 @@ const Login = ({navigation}: any) => {
               title="Đăng nhập"
               style={{paddingHorizontal: K_PADDING_12}}
               disabled={!isButtonEnabled}
-              onPress={() => navigation.navigate('BottomStack')}
+              onPress={() => handleLogin({email, password}, navigation)}
             />
           </View>
         </View>
@@ -110,6 +119,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   input: {
+    padding: K_PADDING_12,
     color: colors.color_black,
     borderBottomWidth: K_BORDER_WIDTH_1,
     borderColor: colors.color_sub_text_2,

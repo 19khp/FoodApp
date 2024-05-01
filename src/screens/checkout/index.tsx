@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Image, SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
 import {
   K_BORDER_RADIUS_20,
@@ -12,6 +12,7 @@ import {
   K_MARGIN_24,
   K_MARGIN_32,
   K_MARGIN_40,
+  K_MARGIN_6,
   K_MARGIN_8,
   K_PADDING_12,
   K_PADDING_16,
@@ -25,10 +26,22 @@ import {Utils} from '../../common/utils';
 import {RadioButton} from '../../common/components/radio-button';
 import {paymentMethods} from '../profile';
 import ButtonBase from '../../common/components/button';
+import {useProfile} from '../../hooks/server/useProfile.ts';
+import {useSelector} from 'react-redux';
+import {selectCheckoutCart} from '../../stores/checkoutSlice.ts';
 
 const Checkout = ({navigation}: any) => {
   const [selectedMethod, setSelectedMethod] = useState<number | null>(0);
-
+  const [total, setTotal] = useState(0);
+  const {data: profile} = useProfile();
+  const selectedMeals = useSelector(selectCheckoutCart);
+  useEffect(() => {
+    const totalAmt = selectedMeals?.reduce(
+      (acc: number, curr: any) => acc + curr.amount * curr.quantity,
+      0,
+    );
+    setTotal(totalAmt);
+  }, [selectedMeals]);
   const handleRadioButtonToggle = (index: number) => {
     setSelectedMethod(index);
   };
@@ -50,7 +63,7 @@ const Checkout = ({navigation}: any) => {
                     paddingBottom: K_PADDING_12,
                   }}>
                   <TextBase preset="title1" fontSize={K_FONT_SIZE_12}>
-                    Người nhận: {'Wayne Rooney'}
+                    Người nhận: {profile?.name}
                   </TextBase>
                 </View>
                 <View
@@ -62,7 +75,7 @@ const Checkout = ({navigation}: any) => {
                     paddingVertical: K_PADDING_12,
                   }}>
                   <TextBase preset="title2" fontSize={K_FONT_SIZE_12}>
-                    Địa chỉ: {'20 thái hà'}
+                    Địa chỉ: {profile?.address}
                   </TextBase>
                 </View>
                 <View
@@ -72,7 +85,7 @@ const Checkout = ({navigation}: any) => {
                     paddingTop: K_PADDING_12,
                   }}>
                   <TextBase preset="title2" fontSize={K_FONT_SIZE_12}>
-                    SĐT: {'0102012'}
+                    SĐT: {profile?.phone}
                   </TextBase>
                 </View>
               </View>
@@ -85,72 +98,30 @@ const Checkout = ({navigation}: any) => {
           <TextBase fontSize={K_FONT_SIZE_15}>Thông tin đơn hàng</TextBase>
           <View style={styles.boxWrapper}>
             <View style={styles.infoWrapper}>
-              <View style={styles.mealContainer}>
-                <Image
-                  style={styles.image}
-                  source={{
-                    uri: 'https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?q=80&w=2864&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                  }}
-                />
-                <View style={styles.textContainer}>
-                  <TextBase preset="title1" fontSize={K_FONT_SIZE_15}>
-                    ji
-                  </TextBase>
-                  <TextBase
-                    preset="title1"
-                    fontSize={K_FONT_SIZE_14}
-                    color={colors.color_primary}>
-                    {Utils.formatCurrency(10000)}
-                  </TextBase>
-                  <TextBase preset="title2" fontSize={K_FONT_SIZE_12}>
-                    Số lượng: {2}
-                  </TextBase>
+              {selectedMeals.map((meal: any) => (
+                <View style={styles.mealContainer} key={meal.productId}>
+                  <Image
+                    style={styles.image}
+                    source={{
+                      uri: meal.image,
+                    }}
+                  />
+                  <View style={styles.textContainer}>
+                    <TextBase preset="title1" fontSize={K_FONT_SIZE_15}>
+                      {meal.name}
+                    </TextBase>
+                    <TextBase
+                      preset="title1"
+                      fontSize={K_FONT_SIZE_14}
+                      color={colors.color_primary}>
+                      {Utils.formatCurrency(meal.amount * meal.quantity)}
+                    </TextBase>
+                    <TextBase preset="title2" fontSize={K_FONT_SIZE_12}>
+                      Số lượng: {meal.quantity}
+                    </TextBase>
+                  </View>
                 </View>
-              </View>
-              <View style={styles.mealContainer}>
-                <Image
-                  style={styles.image}
-                  source={{
-                    uri: 'https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?q=80&w=2864&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                  }}
-                />
-                <View style={styles.textContainer}>
-                  <TextBase preset="title1" fontSize={K_FONT_SIZE_15}>
-                    ji
-                  </TextBase>
-                  <TextBase
-                    preset="title1"
-                    fontSize={K_FONT_SIZE_14}
-                    color={colors.color_primary}>
-                    {Utils.formatCurrency(10000)}
-                  </TextBase>
-                  <TextBase preset="title2" fontSize={K_FONT_SIZE_12}>
-                    Số lượng: {2}
-                  </TextBase>
-                </View>
-              </View>
-              <View style={styles.mealContainer}>
-                <Image
-                  style={styles.image}
-                  source={{
-                    uri: 'https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?q=80&w=2864&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                  }}
-                />
-                <View style={styles.textContainer}>
-                  <TextBase preset="title1" fontSize={K_FONT_SIZE_15}>
-                    ji
-                  </TextBase>
-                  <TextBase
-                    preset="title1"
-                    fontSize={K_FONT_SIZE_14}
-                    color={colors.color_primary}>
-                    {Utils.formatCurrency(10000)}
-                  </TextBase>
-                  <TextBase preset="title2" fontSize={K_FONT_SIZE_12}>
-                    Số lượng: {2}
-                  </TextBase>
-                </View>
-              </View>
+              ))}
             </View>
           </View>
         </View>
@@ -200,7 +171,7 @@ const Checkout = ({navigation}: any) => {
             marginBottom: K_MARGIN_16,
           }}>
           <TextBase>Tổng</TextBase>
-          <TextBase> {Utils.formatCurrency(10000)}</TextBase>
+          <TextBase> {Utils.formatCurrency(total)}</TextBase>
         </View>
         <ButtonBase
           title={'Thanh toán'}
@@ -246,6 +217,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
+    rowGap: K_MARGIN_6,
   },
   buttonContainer: {
     position: 'absolute',

@@ -1,5 +1,12 @@
 import {fontScale, sizeScale} from '../scale';
 
+export const CategoryTypes = {
+  BEST_SELLER: 'BEST_SELLER',
+  FAVORITE: 'FAVORITE',
+  NEW: 'NEW',
+  PRICE_LOW_TO_HIGH: 'PRICE_LOW_TO_HIGH',
+  PRICE_HIGH_TO_LOW: 'PRICE_HIGH_TO_LOW',
+};
 export const K_SIZE_0 = 0;
 export const K_SIZE_1 = 1;
 export const K_SIZE_2 = 2;

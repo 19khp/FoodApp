@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Image,
   SafeAreaView,
@@ -33,6 +33,12 @@ import {RadioButton} from '../../common/components/radio-button';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import CustomModal from '../../common/components/modal';
 import ButtonBase from '../../common/components/button';
+import useLogout from '../../hooks/server/useLogout.ts';
+import Spinner from 'react-native-loading-spinner-overlay';
+import {Authorization} from '../../common/utils/auth.ts';
+import {useSelector} from 'react-redux';
+import {selectIsLogin} from '../../stores/authSlice.ts';
+import {useProfile} from '../../hooks/server/useProfile.ts';
 
 export const paymentMethods = [
   {
@@ -74,11 +80,15 @@ export const paymentMethods = [
 const Index = ({navigation}: any) => {
   const [selectedMethod, setSelectedMethod] = useState<number | null>(0);
   const [modalVisible, setModalVisible] = useState(false);
+  const {handleLogout, loading} = useLogout();
+  const isLogin = useSelector(selectIsLogin);
+  const {data: userInfo} = useProfile();
   const handleRadioButtonToggle = (index: number) => {
     setSelectedMethod(index);
   };
   return (
     <SafeAreaView>
+      <Spinner visible={loading} />
       <CustomModal
         visible={modalVisible}
         closeVisible={false}
@@ -123,54 +133,59 @@ const Index = ({navigation}: any) => {
         </View>
       </CustomModal>
       <View style={{padding: K_PADDING_32}}>
-        <View>
-          <View
-            style={{
-              justifyContent: 'space-between',
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
-            <TextBase preset="title1" fontSize={K_FONT_SIZE_17}>
-              Thông tin
-            </TextBase>
-            <TouchableOpacity onPress={() => setModalVisible(true)}>
-              <TextBase
-                text="Chỉnh sửa"
-                fontSize={K_FONT_SIZE_10}
-                color={colors.color_primary}
-              />
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.boxWrapper}>
-            <View style={styles.infoWrapper}>
-              <View>
-                <Image
-                  style={{
-                    width: K_SIZE_60,
-                    height: K_SIZE_60,
-                    borderRadius: K_SIZE_10,
-                  }}
-                  source={{
-                    uri: 'https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?q=80&w=2864&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                  }}
-                />
+        {isLogin && (
+          <View>
+            <View>
+              <View
+                style={{
+                  justifyContent: 'space-between',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}>
+                <TextBase preset="title1" fontSize={K_FONT_SIZE_17}>
+                  Thông tin
+                </TextBase>
+                <TouchableOpacity onPress={() => setModalVisible(true)}>
+                  <TextBase
+                    text="Chỉnh sửa"
+                    fontSize={K_FONT_SIZE_10}
+                    color={colors.color_primary}
+                  />
+                </TouchableOpacity>
               </View>
-              <View>
-                <TextBase preset="title1" fontSize={K_FONT_SIZE_15}>
-                  Wayne Rooney
-                </TextBase>
-                <TextBase preset="caption1" fontSize={K_FONT_SIZE_10}>
-                  phamkhoa@gmail.com
-                </TextBase>
-                <TextBase preset="caption1" fontSize={K_FONT_SIZE_10}>
-                  Số 20 Thái hà
-                </TextBase>
+
+              <View style={styles.boxWrapper}>
+                <View style={styles.infoWrapper}>
+                  <View>
+                    <Image
+                      style={{
+                        width: K_SIZE_60,
+                        height: K_SIZE_60,
+                        borderRadius: K_SIZE_10,
+                      }}
+                      source={{
+                        uri: userInfo?.image,
+                      }}
+                    />
+                  </View>
+                  <View>
+                    <TextBase preset="title1" fontSize={K_FONT_SIZE_15}>
+                      {userInfo?.name}
+                    </TextBase>
+                    <TextBase preset="caption1" fontSize={K_FONT_SIZE_10}>
+                      {userInfo?.email}
+                    </TextBase>
+                    <TextBase preset="caption1" fontSize={K_FONT_SIZE_10}>
+                      {userInfo?.address}
+                    </TextBase>
+                  </View>
+                </View>
               </View>
             </View>
+            <View style={{height: K_SIZE_60}} />
           </View>
-        </View>
-        <View style={{height: K_SIZE_60}} />
+        )}
+
         <View style={{marginBottom: K_PADDING_60}}>
           <TextBase preset="title1" fontSize={K_FONT_SIZE_17}>
             Phương thức thanh toán
@@ -208,7 +223,17 @@ const Index = ({navigation}: any) => {
             </View>
           </View>
         </View>
-        <ButtonBase title="Đăng xuất" />
+        {isLogin ? (
+          <ButtonBase
+            title="Đăng xuất"
+            onPress={() => handleLogout(navigation)}
+          />
+        ) : (
+          <ButtonBase
+            title="Đăng nhập"
+            onPress={() => navigation.navigate('Login')}
+          />
+        )}
       </View>
     </SafeAreaView>
   );

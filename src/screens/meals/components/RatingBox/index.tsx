@@ -12,7 +12,7 @@ import {View} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import RatingStar from '../../../../common/components/rating-star';
 
-const RatingBox = ({isLast}: {isLast?: boolean}) => {
+const RatingBox = ({isLast, rating}: {isLast?: boolean; rating: any}) => {
   return (
     <View
       style={{
@@ -37,11 +37,11 @@ const RatingBox = ({isLast}: {isLast?: boolean}) => {
         </View>
 
         <View>
-          <TextBase>Pham Van A</TextBase>
-          <RatingStar />
+          <TextBase>{rating.userName}</TextBase>
+          <RatingStar key={rating.id} star={rating.rating} />
         </View>
       </View>
-      <TextBase preset="title2">Ngon xỉu</TextBase>
+      <TextBase preset="title2">{rating.comment}</TextBase>
     </View>
   );
 };

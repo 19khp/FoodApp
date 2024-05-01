@@ -116,6 +116,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   input: {
+    padding: K_PADDING_12,
     borderBottomWidth: K_BORDER_WIDTH_1,
     borderColor: colors.color_sub_text_2,
     marginBottom: 10,

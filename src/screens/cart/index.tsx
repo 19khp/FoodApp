@@ -13,12 +13,26 @@ import ButtonBase from '../../common/components/button';
 import MealBoxCart from './components/MealBoxCart.tsx';
 import {Swipeable} from 'react-native-gesture-handler';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  editCheckoutCart,
+  removeFromCheckoutCart,
+  selectCheckoutCart,
+} from '../../stores/checkoutSlice.ts';
 
 const Cart = ({navigation}: any) => {
-  const [quantity, setQuantity] = useState(1);
-
+  const selectedMeals = useSelector(selectCheckoutCart);
+  const dispatch = useDispatch();
+  console.log('selectedMeals', selectedMeals);
+  const handleEditMeal = (
+    productId: number,
+    quantity: number,
+    amount: number,
+  ) => {
+    dispatch(editCheckoutCart({productId, quantity, amount}));
+  };
   // Function to render delete button when swiping
-  const renderRightActions = (progress: any, dragX: any) => {
+  const renderRightActions = (dragX: any, meal: any) => {
     const trans = dragX.interpolate({
       inputRange: [0, 90],
       outputRange: [-10, 0],
@@ -27,7 +41,7 @@ const Cart = ({navigation}: any) => {
 
     return (
       <TouchableOpacity
-        onPress={() => console.log('Delete item')}
+        onPress={() => dispatch(removeFromCheckoutCart(meal.productId))}
         style={styles.deleteButton}>
         <Animated.View style={[{transform: [{translateX: trans}]}]}>
           <View
@@ -50,28 +64,25 @@ const Cart = ({navigation}: any) => {
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <Swipeable
-          renderRightActions={renderRightActions}
-          containerStyle={{
-            width: '100%',
-            alignItems: 'center',
-            marginBottom: K_PADDING_12,
-          }}>
-          <MealBoxCart
-            quantity={quantity}
-            setQuantity={setQuantity}
-            style={{width: '90%'}}
-          />
-        </Swipeable>
-        <Swipeable
-          renderRightActions={renderRightActions}
-          containerStyle={{width: '100%', alignItems: 'center'}}>
-          <MealBoxCart
-            quantity={quantity}
-            setQuantity={setQuantity}
-            style={{width: '90%'}}
-          />
-        </Swipeable>
+        {selectedMeals?.map(meal => (
+          <Swipeable
+            renderRightActions={dragX => renderRightActions(dragX, meal)}
+            containerStyle={{
+              width: '100%',
+              alignItems: 'center',
+              marginBottom: K_PADDING_12,
+            }}
+            key={meal.productId}>
+            <MealBoxCart
+              meal={meal}
+              quantity={meal.quantity}
+              setQuantity={(quantity: number) =>
+                handleEditMeal(meal.productId, quantity, meal.amount)
+              }
+              style={{width: '90%'}}
+            />
+          </Swipeable>
+        ))}
       </ScrollView>
       <View style={styles.buttonContainer}>
         <ButtonBase

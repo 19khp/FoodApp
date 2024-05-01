@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {
+  Alert,
   Image,
   Platform,
   SafeAreaView,
@@ -29,6 +30,7 @@ import {colors} from '../../../common/constants/color';
 import {RadioButton} from '../../../common/components/radio-button';
 import ButtonBase from '../../../common/components/button';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {updateProfile, useProfile} from '../../../hooks/server/useProfile.ts';
 
 const genders = [
   {
@@ -41,10 +43,46 @@ const genders = [
   },
 ];
 const Details = () => {
-  const [selectedGender, setSelectedGender] = useState<number | null>();
-
+  const {data: userInfo} = useProfile();
+  const [selectedGender, setSelectedGender] = useState<number | undefined>(
+    userInfo?.gender ? 0 : 1,
+  );
+  const [name, setName] = useState(userInfo?.name);
+  const [number, setNumber] = useState(userInfo?.phone);
+  const [address, setAddress] = useState(userInfo?.address);
   const handleRadioButtonToggle = (index: number) => {
     setSelectedGender(index);
+  };
+  const handleudpdateProfile = async () => {
+    try {
+      const res = await updateProfile({
+        id: userInfo?.id,
+        name: name,
+        email: userInfo?.email,
+        phone: number,
+        address: address,
+        gender: selectedGender === 0,
+        image: userInfo?.image,
+        password: userInfo?.password,
+      });
+      console.log({
+
+        id: userInfo?.id,
+        name: name,
+        email: userInfo?.email,
+        phone: number,
+        address: address,
+        gender: selectedGender === 0,
+        image: userInfo?.image,
+        password: userInfo?.password,
+      });
+      if (res) {
+        Alert.alert('Cập nhật thông tin người dùng thành công');
+      }
+    } catch (err) {
+      Alert.alert('Cập nhật thông tin người dùng không thành công');
+      console.log(err);
+    }
   };
   return (
     <SafeAreaView>
@@ -57,7 +95,7 @@ const Details = () => {
               borderRadius: K_BORDER_RADIUS_100,
             }}
             source={{
-              uri: 'https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?q=80&w=2864&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+              uri: userInfo?.image,
             }}
           />
           <View
@@ -83,7 +121,7 @@ const Details = () => {
             width: '100%',
           }}>
           <TextBase text="Tên đăng nhập" />
-          <TextBase text="khoapham" color={colors.color_sub_text} />
+          <TextBase text={userInfo?.name} color={colors.color_sub_text} />
         </View>
         <View
           style={{
@@ -93,7 +131,7 @@ const Details = () => {
             width: '100%',
           }}>
           <TextBase text="Email" />
-          <TextBase text="khoapham@gmail.com" color={colors.color_sub_text} />
+          <TextBase text={userInfo?.email} color={colors.color_sub_text} />
         </View>
         <View
           style={{
@@ -109,8 +147,8 @@ const Details = () => {
                 : {paddingHorizontal: K_PADDING_14},
             ]}
             keyboardType={'numeric'}
-            value={'Khoa'}
-            // onChangeText={handleNameChange}
+            value={name}
+            onChangeText={setName}
           />
         </View>
         <View
@@ -127,8 +165,8 @@ const Details = () => {
                 : {paddingHorizontal: K_PADDING_14},
             ]}
             keyboardType={'numeric'}
-            value={'1201219'}
-            // onChangeText={handleNameChange}
+            value={number}
+            onChangeText={setNumber}
           />
         </View>
         <View
@@ -178,11 +216,15 @@ const Details = () => {
                 ? {padding: K_PADDING_20}
                 : {paddingHorizontal: K_PADDING_14},
             ]}
-            value={'số 12 thái hà'}
-            // onChangeText={handleNameChange}
+            value={address}
+            onChangeText={setAddress}
           />
         </View>
-        <ButtonBase title="Cập nhật" style={{marginTop: K_MARGIN_24}} />
+        <ButtonBase
+          title="Cập nhật"
+          style={{marginTop: K_MARGIN_24}}
+          onPress={handleudpdateProfile}
+        />
       </View>
     </SafeAreaView>
   );

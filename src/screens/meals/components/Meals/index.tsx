@@ -14,6 +14,8 @@ import {
 } from '../../../../common';
 import {colors} from '../../../../common/constants/color';
 import {Utils} from '../../../../common/utils';
+import {getPathResource} from '../../../../common/utils/string.ts';
+import {ENVConfig} from '../../../../common/config/env.ts';
 
 const Meal = ({
   item,
@@ -28,9 +30,9 @@ const Meal = ({
         <View style={styles.mealContainer}>
           <Image
             /* eslint-disable-next-line react-native/no-inline-styles */
-            style={{width: '100%', height: '40%'}}
+            style={{width: '100%', height: '40%', objectFit: 'contain'}}
             source={{
-              uri: item.image,
+              uri: getPathResource(ENVConfig.PATH_PRODUCT, item.image),
             }}
           />
           <View

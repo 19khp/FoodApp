@@ -26,7 +26,7 @@ export class Utils {
     noUnit?: boolean,
   ) => {
     if (!num) {
-      return 0;
+      return 0 + ' ' + currency_const.vnd;
     }
 
     if (typeof num === 'string') {

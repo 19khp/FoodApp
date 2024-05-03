@@ -4,16 +4,21 @@ import {
   K_BORDER_RADIUS_20,
   K_FONT_SIZE_14,
   K_FONT_SIZE_15,
-  K_FONT_SIZE_17, K_MARGIN_10,
+  K_FONT_SIZE_17,
+  K_MARGIN_10,
   K_MARGIN_16,
   K_MARGIN_32,
   K_PADDING_20,
   K_SIZE_18,
-  TextBase
-} from "../../../common";
+  TextBase,
+} from '../../../common';
 import {colors} from '../../../common/constants/color';
 import {Utils} from '../../../common/utils';
 import QuantitySelector from '../../../common/components/quantity-selector';
+import {ENVConfig} from '../../../common/config/env.ts';
+import {getPathResource} from '../../../common/utils/string.ts';
+import { selectCartUser } from "../../../stores/authSlice.ts";
+import { useSelector } from "react-redux";
 
 const MealBoxCart = ({
   meal,
@@ -31,19 +36,19 @@ const MealBoxCart = ({
       <Image
         style={styles.image}
         source={{
-          uri: meal?.image,
+          uri: getPathResource(ENVConfig.PATH_PRODUCT, meal?.productImage),
         }}
       />
       <View style={styles.textContainer}>
         <TextBase preset="title1" fontSize={K_FONT_SIZE_15}>
-          {meal?.name}
+          {meal?.productName}
         </TextBase>
         <TextBase
           preset="title1"
           style={{marginVertical: K_MARGIN_10}}
           fontSize={K_FONT_SIZE_14}
           color={colors.color_primary}>
-          {Utils.formatCurrency(meal?.amount * Number(quantity))}
+          {Utils.formatCurrency(meal?.price * Number(quantity))}
         </TextBase>
         <QuantitySelector
           size={K_SIZE_18}
@@ -69,6 +74,7 @@ const styles = StyleSheet.create({
     height: 74,
     marginRight: K_MARGIN_32,
     borderRadius: K_BORDER_RADIUS_20,
+    objectFit: 'contain',
   },
   textContainer: {
     flex: 1,

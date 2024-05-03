@@ -1,11 +1,5 @@
 import React, {useState} from 'react';
-import {
-  ActivityIndicator,
-  Image,
-  StyleSheet,
-  TextInput,
-  View,
-} from 'react-native';
+import {Image, StyleSheet, TextInput, View} from 'react-native';
 import {colors} from '../../common/constants/color';
 import {
   K_BORDER_WIDTH_1,
@@ -21,15 +15,14 @@ import logo from '../../assets/images/logo.png';
 import ButtonBase from '../../common/components/button';
 import useLogin from '../../hooks/server/useLogin.ts';
 import Spinner from 'react-native-loading-spinner-overlay';
-import {Authorization} from '../../common/utils/auth.ts';
+
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const Login = ({navigation}: any) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('lethehieu151098@gmail.com');
+  const [password, setPassword] = useState('22222');
   const [emailError, setEmailError] = useState('');
   const [isEmailValid, setIsEmailValid] = useState(false);
   const [isPasswordValid, setIsPasswordValid] = useState(false);
-  Authorization.clearToken();
   const {handleLogin, loading} = useLogin();
   const handleEmailChange = (text: string) => {
     setEmail(text);

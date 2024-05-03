@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
   Image,
   SafeAreaView,
@@ -35,10 +35,11 @@ import CustomModal from '../../common/components/modal';
 import ButtonBase from '../../common/components/button';
 import useLogout from '../../hooks/server/useLogout.ts';
 import Spinner from 'react-native-loading-spinner-overlay';
-import {Authorization} from '../../common/utils/auth.ts';
 import {useSelector} from 'react-redux';
 import {selectIsLogin} from '../../stores/authSlice.ts';
 import {useProfile} from '../../hooks/server/useProfile.ts';
+import {getPathResource} from '../../common/utils/string.ts';
+import {ENVConfig} from '../../common/config/env.ts';
 
 export const paymentMethods = [
   {
@@ -86,6 +87,12 @@ const Index = ({navigation}: any) => {
   const handleRadioButtonToggle = (index: number) => {
     setSelectedMethod(index);
   };
+  console.log(
+    getPathResource(
+      ENVConfig.PATH_USER,
+      userInfo?.image || 'avatar_default.jpg',
+    ),
+  );
   return (
     <SafeAreaView>
       <Spinner visible={loading} />
@@ -162,21 +169,34 @@ const Index = ({navigation}: any) => {
                         width: K_SIZE_60,
                         height: K_SIZE_60,
                         borderRadius: K_SIZE_10,
+                        objectFit: 'contain',
                       }}
                       source={{
-                        uri: userInfo?.image,
+                        uri: getPathResource(
+                          ENVConfig.PATH_USER,
+                          userInfo?.image || 'avatar_default.jpg',
+                        ),
                       }}
                     />
                   </View>
-                  <View>
-                    <TextBase preset="title1" fontSize={K_FONT_SIZE_15}>
+                  <View style={{flex: 1}}>
+                    <TextBase
+                      preset="title1"
+                      fontSize={K_FONT_SIZE_15}
+                      style={{flexShrink: 1}}>
                       {userInfo?.name}
                     </TextBase>
-                    <TextBase preset="caption1" fontSize={K_FONT_SIZE_10}>
+                    <TextBase
+                      preset="caption1"
+                      fontSize={K_FONT_SIZE_10}
+                      style={{flexShrink: 1}}>
                       {userInfo?.email}
                     </TextBase>
-                    <TextBase preset="caption1" fontSize={K_FONT_SIZE_10}>
-                      {userInfo?.address}
+                    <TextBase
+                      preset="caption1"
+                      fontSize={K_FONT_SIZE_10}
+                      style={{flexShrink: 1}}>
+                      Địa chỉ: {userInfo?.address}
                     </TextBase>
                   </View>
                 </View>

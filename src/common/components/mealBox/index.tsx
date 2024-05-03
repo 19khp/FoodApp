@@ -2,18 +2,21 @@ import React from 'react';
 import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {colors} from '../../constants/color';
 import {
-  K_BORDER_RADIUS_26, K_FONT_SIZE_12,
+  K_BORDER_RADIUS_26,
+  K_FONT_SIZE_12,
   K_FONT_SIZE_15,
   K_FONT_SIZE_17,
   K_MARGIN_12,
   K_MARGIN_32,
   K_PADDING_24,
-  K_SIZE_120
-} from "../../constants";
+  K_SIZE_120,
+} from '../../constants';
 import {TextBase} from '../text';
 import {MealProps} from '../../../models/meal.ts';
 import {Utils} from '../../utils';
-import { Skeleton } from "@rneui/themed";
+import {Skeleton} from '@rneui/themed';
+import {ENVConfig} from '../../config/env.ts';
+import {getPathResource} from '../../utils/string.ts';
 
 const MealBox = ({item, onPress}: {item: MealProps; onPress: () => void}) => {
   return (
@@ -27,9 +30,9 @@ const MealBox = ({item, onPress}: {item: MealProps; onPress: () => void}) => {
             height: 270,
           }}>
           <Image
-            style={{width: 'auto', height: K_SIZE_120}}
+            style={{width: 'auto', height: K_SIZE_120, objectFit: 'contain'}}
             source={{
-              uri: item.image,
+              uri: getPathResource(ENVConfig.PATH_PRODUCT, item.image),
             }}
           />
           <View

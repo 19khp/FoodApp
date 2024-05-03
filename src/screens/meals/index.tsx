@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   CategoryTypes,
   K_BORDER_RADIUS_6,
@@ -229,6 +229,13 @@ const Meals = ({navigation}: any) => {
     setFromAmount('');
     setSelectedRate(null);
   };
+  // @ts-ignore
+  const searchbarRef = useRef<Searchbar>(null);
+  useEffect(() => {
+    if (searchbarRef.current) {
+      searchbarRef.current.focus();
+    }
+  }, []);
   return (
     <SafeAreaView>
       <CustomModal
@@ -336,6 +343,7 @@ const Meals = ({navigation}: any) => {
             paddingTop: K_PADDING_10,
           }}>
           <Searchbar
+            ref={searchbarRef}
             placeholder="Search"
             onChangeText={setSearchQuery}
             value={searchQuery}

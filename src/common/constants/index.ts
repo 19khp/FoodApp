@@ -7,6 +7,10 @@ export const CategoryTypes = {
   PRICE_LOW_TO_HIGH: 'PRICE_LOW_TO_HIGH',
   PRICE_HIGH_TO_LOW: 'PRICE_HIGH_TO_LOW',
 };
+export const PAYMENT_METHOD = {
+  CASH: 'CASH',
+  PAYPAL: 'PAYPAL',
+};
 export const K_SIZE_0 = 0;
 export const K_SIZE_1 = 1;
 export const K_SIZE_2 = 2;

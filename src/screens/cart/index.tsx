@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {
   Animated,
   SafeAreaView,
@@ -19,6 +19,7 @@ import {
   removeFromCheckoutCart,
   selectCheckoutCart,
 } from '../../stores/checkoutSlice.ts';
+import {useCart} from '../../hooks/server/useCart.ts';
 
 const Cart = ({navigation}: any) => {
   const selectedMeals = useSelector(selectCheckoutCart);
@@ -31,6 +32,7 @@ const Cart = ({navigation}: any) => {
   ) => {
     dispatch(editCheckoutCart({productId, quantity, amount}));
   };
+  const {data: cartData} = useCart();
   // Function to render delete button when swiping
   const renderRightActions = (dragX: any, meal: any) => {
     const trans = dragX.interpolate({
@@ -64,7 +66,7 @@ const Cart = ({navigation}: any) => {
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        {selectedMeals?.map(meal => (
+        {cartData?.cartDetailDtos?.map(meal => (
           <Swipeable
             renderRightActions={dragX => renderRightActions(dragX, meal)}
             containerStyle={{
@@ -75,9 +77,9 @@ const Cart = ({navigation}: any) => {
             key={meal.productId}>
             <MealBoxCart
               meal={meal}
-              quantity={meal.quantity}
+              quantity={meal.quantitySold}
               setQuantity={(quantity: number) =>
-                handleEditMeal(meal.productId, quantity, meal.amount)
+                handleEditMeal(meal.productId, quantity, meal.price)
               }
               style={{width: '90%'}}
             />

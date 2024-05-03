@@ -13,14 +13,22 @@ const ButtonBase = ({
   onPress,
   title,
   buttonColor = colors.color_primary,
+  fontSize = 15,
   disabled,
   style,
+  styleTitle,
+  marginHorizontal = K_PADDING_20,
+  marginVertical = K_PADDING_12,
 }: {
   onPress?: () => void;
   title: string;
   buttonColor?: string;
   disabled?: boolean;
   style?: ViewStyle;
+  styleTitle?: ViewStyle;
+  fontSize?: number;
+  marginHorizontal?: number;
+  marginVertical?: number;
 }) => {
   return (
     <TouchableOpacity onPress={onPress} disabled={disabled}>
@@ -31,17 +39,22 @@ const ButtonBase = ({
           {
             backgroundColor: disabled ? colors.color_sub_text_2 : buttonColor,
             borderRadius: K_BORDER_RADIUS_20,
-            paddingHorizontal: K_PADDING_20,
-            paddingVertical: K_PADDING_12,
             alignItems: 'center',
           },
           style,
         ]}>
         <TextBase
+          style={[
+            {
+              marginHorizontal: marginHorizontal,
+              marginVertical: marginVertical,
+            },
+            styleTitle,
+          ]}
           text={title}
           color={colors.color_white}
           preset="caption1"
-          fontSize={K_FONT_SIZE_15}
+          fontSize={fontSize}
         />
       </View>
     </TouchableOpacity>

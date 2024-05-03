@@ -1,10 +1,12 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {RootState} from './store.ts';
 import {LoginRes} from '../models/login.ts';
+import {CartUserRes} from '../models/user.ts';
 
 interface AuthState {
   isLogin: boolean;
   userInfo: LoginRes;
+  cartUser: CartUserRes;
 }
 
 const initialState: AuthState = {
@@ -29,6 +31,11 @@ const initialState: AuthState = {
       },
     ],
   },
+  cartUser: {
+    cartId: 0,
+    amount: 0,
+    cartDetailDtos: [],
+  },
 };
 
 export const authSlice = createSlice({
@@ -41,13 +48,17 @@ export const authSlice = createSlice({
     setUserInfo: (state, action: PayloadAction<LoginRes>) => {
       state.userInfo = action.payload;
     },
+    setCartUser: (state, action: PayloadAction<CartUserRes>) => {
+      state.cartUser = action.payload;
+    },
   },
 });
 
-export const {setIsLogin, setUserInfo} = authSlice.actions;
+export const {setIsLogin, setUserInfo, setCartUser} = authSlice.actions;
 
 // Selector to retrieve token from state
 export const selectIsLogin = (state: RootState) => state.auth.isLogin;
 export const selectUserInfo = (state: RootState) => state.auth.userInfo;
+export const selectCartUser = (state: RootState) => state.auth.cartUser;
 
 export default authSlice.reducer;

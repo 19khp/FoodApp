@@ -1,24 +1,35 @@
 import React, {useEffect, useState} from 'react';
-import {Image, SafeAreaView, ScrollView, StyleSheet, View} from 'react-native';
+import {
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 import {
   K_BORDER_RADIUS_20,
+  K_BORDER_RADIUS_8,
   K_BORDER_WIDTH_1,
+  K_FONT_SIZE_10,
   K_FONT_SIZE_12,
   K_FONT_SIZE_14,
   K_FONT_SIZE_15,
   K_MARGIN_10,
   K_MARGIN_12,
+  K_MARGIN_120,
   K_MARGIN_16,
   K_MARGIN_24,
   K_MARGIN_32,
   K_MARGIN_40,
   K_MARGIN_6,
-  K_MARGIN_8,
   K_PADDING_12,
   K_PADDING_16,
   K_PADDING_24,
   K_PADDING_32,
+  K_PADDING_8,
   K_SIZE_SCALE_15,
+  PAYMENT_METHOD,
   TextBase,
 } from '../../common';
 import {colors} from '../../common/constants/color';
@@ -29,11 +40,26 @@ import ButtonBase from '../../common/components/button';
 import {useProfile} from '../../hooks/server/useProfile.ts';
 import {useSelector} from 'react-redux';
 import {selectCheckoutCart} from '../../stores/checkoutSlice.ts';
+import {selectIsLogin} from '../../stores/authSlice.ts';
+import {ENVConfig} from '../../common/config/env.ts';
+import {
+  getPathResource,
+  isVietnamesePhoneNumber,
+} from '../../common/utils/string.ts';
+import {validateVoucher} from '../../hooks/server/voucher.ts';
+import {checkoutProcess} from '../../hooks/server/checkout.ts';
 
 const Checkout = ({navigation}: any) => {
   const [selectedMethod, setSelectedMethod] = useState<number | null>(0);
-  const [total, setTotal] = useState(0);
   const {data: profile} = useProfile();
+  const isLogin = useSelector(selectIsLogin);
+  const [total, setTotal] = useState(0);
+  const [receiver, setReceiver] = useState(isLogin ? profile?.name : '');
+  const [address, setAddress] = useState(isLogin ? profile?.address : '');
+  const [phoneNumber, setPhoneNumber] = useState(isLogin ? profile?.phone : '');
+  const [voucher, setVoucher] = useState('');
+  const [discount, setDiscount] = useState<number | null>(0);
+  const [isValidPhone, setIsValidPhone] = useState(true);
   const selectedMeals = useSelector(selectCheckoutCart);
   useEffect(() => {
     const totalAmt = selectedMeals?.reduce(
@@ -45,6 +71,50 @@ const Checkout = ({navigation}: any) => {
   const handleRadioButtonToggle = (index: number) => {
     setSelectedMethod(index);
   };
+  const handleValidateVoucher = async () => {
+    try {
+      const res = await validateVoucher(voucher);
+      if (res.result.voucherId) {
+        setDiscount(res.result.voucherPrice);
+      } else {
+        setDiscount(null);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const isValid = () => {
+    return (
+      receiver?.trim().length === 0 ||
+      address?.trim().length === 0 ||
+      phoneNumber?.trim().length === 0
+    );
+  };
+  const handleOrder = async () => {
+    if (!isVietnamesePhoneNumber(phoneNumber || '')) {
+      setIsValidPhone(false);
+      return;
+    }
+    try {
+      const res = await checkoutProcess({
+        address: address || '',
+        cartId: 7,
+        description: '',
+        paymentMethod:
+          selectedMethod === 0 ? PAYMENT_METHOD.CASH : PAYMENT_METHOD.PAYPAL,
+        phone: phoneNumber || '',
+        username: profile?.name || '',
+        voucherCode: voucher,
+      });
+      if (res.result.ordersId) {
+        navigation.navigate('Checkout');
+      } else {
+        setDiscount(null);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <SafeAreaView>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
@@ -54,39 +124,54 @@ const Checkout = ({navigation}: any) => {
           <View style={styles.boxWrapper}>
             <View style={styles.infoWrapper}>
               <View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    columnGap: K_MARGIN_8,
-                    borderBottomWidth: K_BORDER_WIDTH_1,
-                    borderBottomColor: colors.color_sub_text_2,
-                    paddingBottom: K_PADDING_12,
-                  }}>
-                  <TextBase preset="title1" fontSize={K_FONT_SIZE_12}>
-                    Người nhận: {profile?.name}
+                <View>
+                  <TextBase
+                    fontSize={K_FONT_SIZE_10}
+                    style={{color: colors.color_sub_text}}>
+                    Người nhận (bắt buộc)
                   </TextBase>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Người nhận"
+                    placeholderTextColor={colors.color_sub_text}
+                    value={receiver}
+                    onChangeText={setReceiver}
+                  />
                 </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    columnGap: K_MARGIN_8,
-                    borderBottomWidth: K_BORDER_WIDTH_1,
-                    borderBottomColor: colors.color_sub_text_2,
-                    paddingVertical: K_PADDING_12,
-                  }}>
-                  <TextBase preset="title2" fontSize={K_FONT_SIZE_12}>
-                    Địa chỉ: {profile?.address}
+                <View>
+                  <TextBase
+                    fontSize={K_FONT_SIZE_10}
+                    style={{color: colors.color_sub_text}}>
+                    Địa chỉ (bắt buộc)
                   </TextBase>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Địa chỉ"
+                    placeholderTextColor={colors.color_sub_text}
+                    value={address}
+                    onChangeText={setAddress}
+                  />
                 </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    columnGap: K_MARGIN_8,
-                    paddingTop: K_PADDING_12,
-                  }}>
-                  <TextBase preset="title2" fontSize={K_FONT_SIZE_12}>
-                    SĐT: {profile?.phone}
+                <View>
+                  <TextBase
+                    fontSize={K_FONT_SIZE_10}
+                    style={{color: colors.color_sub_text}}>
+                    Số điện thoại (bắt buộc)
                   </TextBase>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Số điện thoại"
+                    placeholderTextColor={colors.color_sub_text}
+                    value={phoneNumber}
+                    onChangeText={setPhoneNumber}
+                  />
+                  {!isValidPhone && (
+                    <TextBase
+                      fontSize={K_FONT_SIZE_10}
+                      color={colors.color_primary}>
+                      Số điện thoại không hợp lệ
+                    </TextBase>
+                  )}
                 </View>
               </View>
             </View>
@@ -103,7 +188,7 @@ const Checkout = ({navigation}: any) => {
                   <Image
                     style={styles.image}
                     source={{
-                      uri: meal.image,
+                      uri: getPathResource(ENVConfig.PATH_PRODUCT, meal?.image),
                     }}
                   />
                   <View style={styles.textContainer}>
@@ -126,6 +211,46 @@ const Checkout = ({navigation}: any) => {
           </View>
         </View>
 
+        {/*VOUCHER*/}
+        <View style={{marginTop: K_MARGIN_24}}>
+          <TextBase fontSize={K_FONT_SIZE_15}>Nhập mã khuyến mại</TextBase>
+          <View style={styles.boxWrapper}>
+            <View style={styles.infoWrapper}>
+              <View
+                style={[
+                  styles.mealContainer,
+                  {justifyContent: 'space-between'},
+                ]}>
+                <TextInput
+                  style={{
+                    borderWidth: K_BORDER_WIDTH_1,
+                    borderColor: colors.color_sub_text_2,
+                    padding: K_PADDING_8,
+                    borderRadius: K_BORDER_RADIUS_8,
+                    width: '60%',
+                  }}
+                  placeholderTextColor={colors.color_sub_text}
+                  value={voucher}
+                  onChangeText={setVoucher}
+                />
+                <ButtonBase
+                  title={'Áp dụng'}
+                  marginHorizontal={K_MARGIN_16}
+                  marginVertical={K_MARGIN_6}
+                  fontSize={K_FONT_SIZE_12}
+                  onPress={handleValidateVoucher}
+                />
+              </View>
+              {discount === null && (
+                <TextBase
+                  fontSize={K_FONT_SIZE_10}
+                  color={colors.color_primary}>
+                  Mã khuyến mại không hợp lệ
+                </TextBase>
+              )}
+            </View>
+          </View>
+        </View>
         {/*  PHƯƠNG THỨC THANH TOÁN*/}
         <View style={{marginTop: K_MARGIN_24, marginBottom: K_MARGIN_40}}>
           <TextBase fontSize={K_FONT_SIZE_15}>Phương thức thanh toán</TextBase>
@@ -170,12 +295,22 @@ const Checkout = ({navigation}: any) => {
             justifyContent: 'space-between',
             marginBottom: K_MARGIN_16,
           }}>
+          <TextBase>Giảm giá</TextBase>
+          <TextBase> {Utils.formatCurrency(discount)}</TextBase>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginBottom: K_MARGIN_16,
+          }}>
           <TextBase>Tổng</TextBase>
-          <TextBase> {Utils.formatCurrency(total)}</TextBase>
+          <TextBase> {Utils.formatCurrency(total - (discount || 0))}</TextBase>
         </View>
         <ButtonBase
           title={'Thanh toán'}
-          // onPress={() => navigation.navigate('Checkout')}
+          disabled={isValid()}
+          onPress={handleOrder}
         />
       </View>
     </SafeAreaView>
@@ -184,8 +319,8 @@ const Checkout = ({navigation}: any) => {
 const styles = StyleSheet.create({
   scrollViewContent: {
     flexGrow: 1,
-    bottom: K_MARGIN_32,
     padding: K_PADDING_32,
+    paddingBottom: K_MARGIN_120,
   },
   boxWrapper: {
     shadowColor: colors.color_black,
@@ -207,13 +342,14 @@ const styles = StyleSheet.create({
     backgroundColor: colors.color_white,
     borderRadius: K_BORDER_RADIUS_20,
     alignItems: 'center',
-    marginBottom: K_MARGIN_24,
+    marginVertical: K_MARGIN_16,
   },
   image: {
     width: 74,
     height: 74,
     marginRight: K_MARGIN_32,
     borderRadius: K_BORDER_RADIUS_20,
+    objectFit: 'contain',
   },
   textContainer: {
     flex: 1,
@@ -227,6 +363,14 @@ const styles = StyleSheet.create({
     backgroundColor: colors.color_background,
     paddingBottom: K_MARGIN_32,
     paddingTop: K_MARGIN_16,
+  },
+  input: {
+    paddingVertical: K_PADDING_12,
+    color: colors.color_black,
+    borderBottomWidth: K_BORDER_WIDTH_1,
+    borderColor: colors.color_sub_text_2,
+    marginBottom: 10,
+    width: '100%',
   },
 });
 export default Checkout;

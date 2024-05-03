@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useRef} from 'react';
 import {
   Image,
   SafeAreaView,
@@ -14,16 +14,16 @@ import {
   CategoryTypes,
   K_BORDER_RADIUS_100,
   K_FONT_SIZE_10,
-  K_MARGIN_20,
   K_MARGIN_32,
   K_PADDING_12,
   K_PADDING_24,
   K_PADDING_32,
+  K_PADDING_40,
   K_PADDING_8,
-  K_SIZE_24,
-  K_SIZE_26, K_SIZE_28,
-  TextBase
-} from "../../common";
+  K_SIZE_26,
+  K_SIZE_28,
+  TextBase,
+} from '../../common';
 import {Typography} from '../../common/constants/typography-foundation';
 import {colors} from '../../common/constants/color';
 import CombosMenu from './components/CombosMenu';
@@ -31,14 +31,17 @@ import CombosMenu from './components/CombosMenu';
 // @ts-ignore
 import logo from '../../assets/images/logo.png';
 import {useProductList} from '../../hooks/server/useProduct.ts';
-import {useSelector} from 'react-redux';
-import {selectCheckoutCart} from '../../stores/checkoutSlice.ts';
+import {useDispatch, useSelector} from 'react-redux';
+import {setCartUser} from '../../stores/authSlice.ts';
+import {useCart} from '../../hooks/server/useCart.ts';
+import { selectIsUpdateCart, setIsUpdateCart } from "../../stores/checkoutSlice.ts";
 
 const Index = ({navigation}: any) => {
   const {data: newMealList, isLoading: newLoading} = useProductList({
     sortType: CategoryTypes.NEW,
     size: 8,
   });
+  console.log(newMealList);
   const {data: bestSellerMealList, isLoading: bestSellerLoading} =
     useProductList({
       sortType: CategoryTypes.BEST_SELLER,
@@ -55,7 +58,21 @@ const Index = ({navigation}: any) => {
     {key: CategoryTypes.FAVORITE, title: 'Được yêu thích'},
   ]);
   const [searchQuery, setSearchQuery] = React.useState('');
-  const selectedMeals = useSelector(selectCheckoutCart);
+  const {data: cart, refetch: refetchCart} = useCart();
+  const dispatch = useDispatch();
+
+  // @ts-ignore
+  const searchbarRef = useRef<Searchbar>(null);
+  const isUpdateCart = useSelector(selectIsUpdateCart);
+  useEffect(() => {
+    if (cart) {
+      dispatch(setCartUser(cart));
+    }
+    if (isUpdateCart) {
+      refetchCart();
+      dispatch(setIsUpdateCart(false));
+    }
+  }, [isUpdateCart, dispatch, cart, refetchCart]);
   return (
     <SafeAreaView style={{backgroundColor: colors.color_background}}>
       <View style={styles.appBarWrapper}>
@@ -77,15 +94,15 @@ const Index = ({navigation}: any) => {
               />
               <View
                 style={{
-                  backgroundColor: colors.color_white,
+                  backgroundColor: colors.color_primary,
                   paddingHorizontal: K_PADDING_8,
                   borderRadius: K_BORDER_RADIUS_100,
-                  right: K_PADDING_12,
-                  bottom: K_PADDING_12,
+                  left: K_PADDING_12,
+                  bottom: K_PADDING_40,
                 }}>
                 <TextBase
-                  text={selectedMeals.length.toString()}
-                  color={colors.color_primary}
+                  text={cart?.cartDetailDtos.length.toString()}
+                  color={colors.color_white}
                   fontSize={K_FONT_SIZE_10}
                 />
               </View>
@@ -98,6 +115,13 @@ const Index = ({navigation}: any) => {
         onChangeText={setSearchQuery}
         value={searchQuery}
         style={styles.searchBarWrapper}
+        onFocus={() => {
+          if (searchbarRef.current) {
+            searchbarRef.current.blur();
+          }
+          navigation.navigate('meals');
+        }}
+        ref={searchbarRef}
       />
       <View style={styles.menuWrapper}>
         <TabView

@@ -1,17 +1,18 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {
   K_BORDER_RADIUS_100,
   K_BORDER_RADIUS_20,
-  K_FONT_SIZE_10,
   K_FONT_SIZE_17,
+  K_FONT_SIZE_9,
   K_MARGIN_20,
   K_MARGIN_8,
   K_PADDING_12,
+  K_PADDING_32,
   K_PADDING_4,
-  K_PADDING_8,
+  K_PADDING_6,
   K_SIZE_10,
   K_SIZE_24,
   K_SIZE_26,
@@ -34,8 +35,10 @@ import SignUp from '../screens/sign-up';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import Details from '../screens/profile/details';
 import ChangePassword from '../screens/profile/change-password';
-import {useSelector} from 'react-redux';
-import {selectCheckoutCart} from '../stores/checkoutSlice.ts';
+import {useDispatch, useSelector} from 'react-redux';
+import {setCartUser} from '../stores/authSlice.ts';
+import {useCart} from '../hooks/server/useCart.ts';
+import {selectIsUpdateCart, setIsUpdateCart} from '../stores/checkoutSlice.ts';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -50,10 +53,26 @@ const CustomBackButton = ({navigation}: any) => (
   />
 );
 const CartButton = ({navigation}: any) => {
-  const selectedMeals = useSelector(selectCheckoutCart);
+  const {data: cart, refetch: refetchCart} = useCart();
+  const dispatch = useDispatch();
+  const isUpdateCart = useSelector(selectIsUpdateCart);
+  useEffect(() => {
+    if (cart) {
+      dispatch(setCartUser(cart));
+    }
+    if (isUpdateCart) {
+      refetchCart();
+      dispatch(setIsUpdateCart(false));
+    }
+  }, [isUpdateCart, dispatch, cart, refetchCart]);
   return (
     <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
-      <View style={{alignItems: 'center', position: 'relative'}}>
+      <View
+        style={{
+          alignItems: 'center',
+          position: 'relative',
+          marginTop: K_MARGIN_8,
+        }}>
         <MaterialCommunityIcons
           name="cart-outline"
           size={K_SIZE_24}
@@ -62,15 +81,16 @@ const CartButton = ({navigation}: any) => {
         />
         <View
           style={{
-            backgroundColor: colors.color_white,
-            paddingHorizontal: K_PADDING_8,
+            backgroundColor: colors.color_primary,
+            paddingHorizontal: K_PADDING_6,
             borderRadius: K_BORDER_RADIUS_100,
-            bottom: K_PADDING_12,
+            bottom: K_PADDING_32,
           }}>
           <TextBase
-            text={selectedMeals.length.toString()}
-            color={colors.color_primary}
-            fontSize={K_FONT_SIZE_10}
+            text={cart?.cartDetailDtos.length.toString()}
+            color={colors.color_white}
+            lineHeight={K_FONT_SIZE_17}
+            fontSize={K_FONT_SIZE_9}
           />
         </View>
       </View>
@@ -120,6 +140,7 @@ const BottomStack = () => {
                   shadowOpacity: focused ? 0.4 : 0,
                   shadowRadius: focused ? 10 : 0,
                 }}
+                // onPress={() => refetchCart()}
               />
             );
           },

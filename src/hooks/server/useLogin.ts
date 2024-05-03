@@ -3,7 +3,8 @@ import {BASE_URL, request} from '../../network/service.ts';
 import {useState} from 'react';
 import {Alert} from 'react-native';
 import {useDispatch} from 'react-redux';
-import {setIsLogin, setUserInfo} from '../../stores/authSlice.ts';
+import {setCartUser, setIsLogin, setUserInfo} from '../../stores/authSlice.ts';
+import {getCartUser} from './cart.ts';
 
 const useLogin = () => {
   const [loading, setLoading] = useState(false);
@@ -26,7 +27,8 @@ const useLogin = () => {
       }
     } catch (err: any) {
       dispatch(setIsLogin(false));
-      Alert.alert('Sai thông tin đăng nhập', err);
+      console.log(err);
+      Alert.alert('Lỗi', JSON.stringify(err));
       setLoading(false);
     }
   };

@@ -13,31 +13,31 @@ import {colors} from '../../constants/color';
 const QuantitySelector = ({
   size,
   fontInputSize,
-  quantity,
+  handleCountMinus,
+  handleCountPlus,
+  handleTextChange,
   setQuantity,
+  quantity,
 }: {
   size: number;
   fontInputSize: number;
-  quantity: number;
-  setQuantity: any;
+  handleCountMinus?: any;
+  handleCountPlus?: any;
+  handleTextChange?: any;
+  quantity: any;
+  setQuantity?: any;
 }) => {
-  const handleTextChange = (inputText: string) => {
-    const newText = inputText.replace(/[^0-9]/g, '');
-    setQuantity(newText);
+  const handlePlus = () => {
+    setQuantity(quantity + 1);
   };
-
-  const handleCountPlus = () => {
-    setQuantity(String(Number(quantity) + 1));
-  };
-
-  const handleCountMinus = () => {
-    if (Number(quantity) > 1) {
-      setQuantity(String(Number(quantity) - 1));
+  const handleMinus = () => {
+    if (quantity > 1) {
+      setQuantity(quantity - 1);
     }
   };
   return (
     <View style={{flexDirection: 'row', alignItems: 'center'}}>
-      <TouchableOpacity onPress={handleCountMinus}>
+      <TouchableOpacity onPress={handleCountMinus || handleMinus}>
         <View
           // @ts-ignore
           style={styles.counterButton}>
@@ -57,7 +57,7 @@ const QuantitySelector = ({
         maxLength={3}
         textAlign={'center'}
       />
-      <TouchableOpacity onPress={handleCountPlus}>
+      <TouchableOpacity onPress={handleCountPlus || handlePlus}>
         <View
           // @ts-ignore
           style={styles.counterButton}>

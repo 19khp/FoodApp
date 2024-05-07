@@ -16,6 +16,7 @@ export interface UserProps {
       name: string;
     },
   ];
+  type: string;
 }
 export interface CartUserRes {
   cartId: number;

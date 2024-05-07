@@ -18,5 +18,11 @@ export function useProfile() {
 }
 export const getProfile = (params: any) =>
   request<UserProps>('get', `${BASE_URL}/users/${params}`).then(r => r);
-export const updateProfile = (params: any) =>
-  request<UserProps>('put', `${BASE_URL}/users/${params}`).then(r => r);
+export const updateProfile = (params: any, userId: number) =>
+  request<UserProps>('put', `${BASE_URL}/users/${userId}`, params).then(r => r);
+export const imageUpload = (params: any) =>
+  request<UserProps>('post', `${BASE_URL}/file/upload`, params, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  }).then(r => r);

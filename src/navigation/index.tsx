@@ -39,6 +39,8 @@ import {useDispatch, useSelector} from 'react-redux';
 import {setCartUser} from '../stores/authSlice.ts';
 import {useCart} from '../hooks/server/useCart.ts';
 import {selectIsUpdateCart, setIsUpdateCart} from '../stores/checkoutSlice.ts';
+import CheckoutResult from '../screens/checkout/checkoutResult';
+import HistoryDetails from "../screens/history/details";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -87,7 +89,7 @@ const CartButton = ({navigation}: any) => {
             bottom: K_PADDING_32,
           }}>
           <TextBase
-            text={cart?.cartDetailDtos.length.toString()}
+            text={cart?.cartDetailDtos.length.toString() || '0'}
             color={colors.color_white}
             lineHeight={K_FONT_SIZE_17}
             fontSize={K_FONT_SIZE_9}
@@ -176,7 +178,12 @@ const BottomStack = () => {
         name="history"
         component={history}
         options={{
-          headerShown: false,
+          title: 'Lịch sử',
+          headerStyle: {backgroundColor: colors.color_background},
+          headerShown: true,
+          headerTitleAlign: 'center',
+          headerTitleStyle: {fontSize: K_FONT_SIZE_17},
+          headerShadowVisible: false,
           tabBarIcon: ({color, focused}) => {
             return (
               <MaterialCommunityIcons
@@ -342,6 +349,35 @@ const Navigation = () => {
             headerBackTitleVisible: false,
             headerStyle: {backgroundColor: colors.color_background},
             headerShadowVisible: false,
+            headerLeft: () => <CustomBackButton navigation={navigation} />,
+          })}
+        />
+        <Stack.Screen
+          name="CheckoutResult"
+          component={CheckoutResult}
+          options={() => ({
+            title: 'Kết quả thanh toán',
+            headerShown: true,
+            headerTitleAlign: 'center',
+            headerTitleStyle: {fontSize: K_FONT_SIZE_17},
+            headerBackTitleVisible: false,
+            headerStyle: {backgroundColor: colors.color_background},
+            headerShadowVisible: false,
+            headerBackVisible: false,
+          })}
+        />
+        <Stack.Screen
+          name="HistoryDetails"
+          component={HistoryDetails}
+          options={({navigation}) => ({
+            title: 'Chi tiết món ăn mua',
+            headerShown: true,
+            headerTitleAlign: 'center',
+            headerTitleStyle: {fontSize: K_FONT_SIZE_17},
+            headerBackTitleVisible: false,
+            headerStyle: {backgroundColor: colors.color_background},
+            headerShadowVisible: false,
+            headerBackVisible: false,
             headerLeft: () => <CustomBackButton navigation={navigation} />,
           })}
         />

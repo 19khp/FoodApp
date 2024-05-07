@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {
+  Alert,
   Image,
   SafeAreaView,
   ScrollView,
@@ -23,6 +24,7 @@ import {
   K_MARGIN_32,
   K_MARGIN_40,
   K_MARGIN_6,
+  K_MARGIN_60,
   K_PADDING_12,
   K_PADDING_16,
   K_PADDING_24,
@@ -39,7 +41,6 @@ import {paymentMethods} from '../profile';
 import ButtonBase from '../../common/components/button';
 import {useProfile} from '../../hooks/server/useProfile.ts';
 import {useSelector} from 'react-redux';
-import {selectCheckoutCart} from '../../stores/checkoutSlice.ts';
 import {selectIsLogin} from '../../stores/authSlice.ts';
 import {ENVConfig} from '../../common/config/env.ts';
 import {
@@ -47,6 +48,11 @@ import {
   isVietnamesePhoneNumber,
 } from '../../common/utils/string.ts';
 import {validateVoucher} from '../../hooks/server/voucher.ts';
+import {useCart} from '../../hooks/server/useCart.ts';
+import {WebView} from 'react-native-webview';
+import CustomModal from '../../common/components/modal';
+import {ActivityIndicator} from 'react-native-paper';
+import axios from 'axios';
 import {checkoutProcess} from '../../hooks/server/checkout.ts';
 
 const Checkout = ({navigation}: any) => {
@@ -54,20 +60,134 @@ const Checkout = ({navigation}: any) => {
   const {data: profile} = useProfile();
   const isLogin = useSelector(selectIsLogin);
   const [total, setTotal] = useState(0);
-  const [receiver, setReceiver] = useState(isLogin ? profile?.name : '');
-  const [address, setAddress] = useState(isLogin ? profile?.address : '');
-  const [phoneNumber, setPhoneNumber] = useState(isLogin ? profile?.phone : '');
+  const [receiver, setReceiver] = useState('');
+  const [address, setAddress] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [voucher, setVoucher] = useState('');
   const [discount, setDiscount] = useState<number | null>(0);
   const [isValidPhone, setIsValidPhone] = useState(true);
-  const selectedMeals = useSelector(selectCheckoutCart);
+  const [showGateway, setShowGateway] = useState(false);
+  const [accessToken, setAccessToken] = useState(null);
+  const [approvalUrl, setApprovalUrl] = useState(null);
+
+  const fetchOrder = async () => {
+    setApprovalUrl(null);
+    const totalConvert = total / 24000;
+    const dataDetail = {
+      intent: 'sale',
+      payer: {
+        payment_method: 'paypal',
+      },
+      transactions: [
+        {
+          amount: {
+            total: `${totalConvert.toFixed(2)}`,
+            currency: 'USD',
+            details: {
+              subtotal: `${totalConvert.toFixed(2)}`,
+              tax: '0',
+              shipping: '0',
+              handling_fee: '0',
+              shipping_discount: '0',
+              insurance: '0',
+            },
+          },
+        },
+      ],
+      redirect_urls: {
+        return_url: 'https://example.com',
+        cancel_url: 'https://example.com',
+      },
+    };
+    console.log('=====START======');
+    fetch('https://api.sandbox.paypal.com/v1/oauth2/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization:
+          'Bearer A21AALK4Mp_qO3J9LUE1jmhyejJWa6RYXBpwyEyeSYuZDpuOlupUHec32rJeTOOp2Q8Ruui_LLstTU3phn_dwoAhMm0_y-SmQ',
+      },
+      body: 'grant_type=client_credentials',
+    })
+      .then(res => res.json())
+      .then(response => {
+        setAccessToken(response.access_token);
+        console.log('SUCCESS');
+        console.log(response.access_token);
+        console.log(JSON.stringify(dataDetail));
+        fetch('https://api.sandbox.paypal.com/v1/payments/payment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${response.access_token}`,
+          },
+          body: JSON.stringify(dataDetail),
+        })
+          .then(res => res.json())
+          .then(res => {
+            const {links} = res;
+            const approvalUri = links.find(
+              (data: any) => data.rel === 'approval_url',
+            );
+
+            setApprovalUrl(approvalUri.href);
+            setShowGateway(true);
+            console.log(approvalUrl);
+          })
+          .catch(err => {
+            console.log('ERRRRRRR1', JSON.stringify(err));
+          });
+      })
+      .catch(err => {
+        console.log('ERRRRRRR2', {...err});
+      });
+  };
+  const onNavigationStateChange = (webViewState: any) => {
+    if (webViewState.url.includes('https://example.com/')) {
+      setApprovalUrl(null);
+      const urlArr = webViewState.url.split(/(=|&)/);
+      const paymentId = urlArr[2];
+      const payerId = urlArr[10];
+      console.log('paymentId', paymentId);
+      console.log('payerId', payerId);
+      axios
+        .post(
+          `https://api.sandbox.paypal.com/v1/payments/payment/${paymentId}/execute`,
+          {payer_id: payerId},
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${accessToken}`,
+            },
+          },
+        )
+        .then(response => {
+          console.log(response);
+          callOrder();
+        })
+        .catch(err => {
+          console.log({...err});
+          setShowGateway(false);
+          Alert.alert('Thanh toán không thành công!');
+        });
+    }
+  };
+
+  const {data: cartData} = useCart();
   useEffect(() => {
-    const totalAmt = selectedMeals?.reduce(
-      (acc: number, curr: any) => acc + curr.amount * curr.quantity,
+    if (profile && isLogin) {
+      setReceiver(profile?.name);
+      setAddress(profile?.address);
+      setPhoneNumber(profile?.phone);
+    }
+    const totalAmt = cartData?.cartDetailDtos.reduce(
+      (acc: number, curr: any) => acc + curr.price * curr.quantitySold,
       0,
     );
-    setTotal(totalAmt);
-  }, [selectedMeals]);
+    if (totalAmt) {
+      setTotal(totalAmt);
+    }
+  }, [cartData, isLogin, profile]);
   const handleRadioButtonToggle = (index: number) => {
     setSelectedMethod(index);
   };
@@ -80,7 +200,7 @@ const Checkout = ({navigation}: any) => {
         setDiscount(null);
       }
     } catch (err) {
-      console.log(err);
+      console.log(JSON.stringify(err));
     }
   };
   const isValid = () => {
@@ -95,28 +215,71 @@ const Checkout = ({navigation}: any) => {
       setIsValidPhone(false);
       return;
     }
+    if (selectedMethod === 1) {
+      setShowGateway(true);
+      await fetchOrder();
+      return;
+    }
+    callOrder();
+  };
+
+  const callOrder = async () => {
     try {
-      const res = await checkoutProcess({
-        address: address || '',
-        cartId: 7,
-        description: '',
-        paymentMethod:
-          selectedMethod === 0 ? PAYMENT_METHOD.CASH : PAYMENT_METHOD.PAYPAL,
-        phone: phoneNumber || '',
-        username: profile?.name || '',
-        voucherCode: voucher,
-      });
-      if (res.result.ordersId) {
-        navigation.navigate('Checkout');
-      } else {
-        setDiscount(null);
+      if (cartData && profile) {
+        const res = await checkoutProcess(
+          {
+            address: address || '',
+            cartId: cartData?.cartId,
+            description: '',
+            paymentMethod:
+              selectedMethod === 0
+                ? PAYMENT_METHOD.CASH
+                : PAYMENT_METHOD.PAYPAL,
+            phone: phoneNumber || '',
+            username: profile?.name || '',
+            voucherCode: voucher,
+          },
+          profile.email,
+        );
+        if (res.result.ordersId) {
+          console.log(res.result);
+          setShowGateway(false);
+          navigation.navigate('CheckoutResult', {res: res.result});
+        } else {
+          setDiscount(null);
+        }
       }
     } catch (err) {
-      console.log(err);
+      console.log(JSON.stringify(err));
     }
   };
   return (
     <SafeAreaView>
+      <CustomModal
+        visible={showGateway}
+        closeVisible={false}
+        onClose={() => setShowGateway(false)}>
+        {approvalUrl ? (
+          <View style={styles.webViewCon}>
+            <WebView
+              style={{flex: 1}}
+              source={{uri: approvalUrl}}
+              onNavigationStateChange={onNavigationStateChange}
+              javaScriptEnabled={true}
+              domStorageEnabled={true}
+              startInLoadingState={false}
+            />
+          </View>
+        ) : (
+          <View style={styles.webViewCon}>
+            <ActivityIndicator
+              size={24}
+              color={'#00457C'}
+              style={{marginTop: K_MARGIN_60}}
+            />
+          </View>
+        )}
+      </CustomModal>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         {/*THÔNG TIN NGƯỜI NHẬN*/}
         <View>
@@ -183,26 +346,29 @@ const Checkout = ({navigation}: any) => {
           <TextBase fontSize={K_FONT_SIZE_15}>Thông tin đơn hàng</TextBase>
           <View style={styles.boxWrapper}>
             <View style={styles.infoWrapper}>
-              {selectedMeals.map((meal: any) => (
+              {cartData?.cartDetailDtos.map((meal: any) => (
                 <View style={styles.mealContainer} key={meal.productId}>
                   <Image
                     style={styles.image}
                     source={{
-                      uri: getPathResource(ENVConfig.PATH_PRODUCT, meal?.image),
+                      uri: getPathResource(
+                        ENVConfig.PATH_PRODUCT,
+                        meal?.productImage,
+                      ),
                     }}
                   />
                   <View style={styles.textContainer}>
                     <TextBase preset="title1" fontSize={K_FONT_SIZE_15}>
-                      {meal.name}
+                      {meal.productName}
                     </TextBase>
                     <TextBase
                       preset="title1"
                       fontSize={K_FONT_SIZE_14}
                       color={colors.color_primary}>
-                      {Utils.formatCurrency(meal.amount * meal.quantity)}
+                      {Utils.formatCurrency(meal.price * meal.quantitySold)}
                     </TextBase>
                     <TextBase preset="title2" fontSize={K_FONT_SIZE_12}>
-                      Số lượng: {meal.quantity}
+                      Số lượng: {meal.quantitySold}
                     </TextBase>
                   </View>
                 </View>
@@ -371,6 +537,17 @@ const styles = StyleSheet.create({
     borderColor: colors.color_sub_text_2,
     marginBottom: 10,
     width: '100%',
+  },
+  webViewCon: {
+    // position: 'absolute',
+    height: '90%',
+  },
+  wbHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f9f9f9',
+    zIndex: 25,
+    elevation: 2,
   },
 });
 export default Checkout;

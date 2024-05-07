@@ -30,7 +30,7 @@ import {TabBar, TabView} from 'react-native-tab-view';
 import {colors} from '../../common/constants/color';
 import {Typography} from '../../common/constants/typography-foundation';
 import Meal from './components/Meals';
-import {Searchbar} from 'react-native-paper';
+import {ActivityIndicator, Searchbar} from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import CustomModal from '../../common/components/modal';
 import ButtonBase from '../../common/components/button';
@@ -38,6 +38,7 @@ import {RadioButton} from '../../common/components/radio-button';
 import {getProductList, useProductList} from '../../hooks/server/useProduct.ts';
 import {MealProps} from '../../models/meal.ts';
 import {Utils} from '../../common/utils';
+import {useCategory} from '../../hooks/server/useCategory.ts';
 
 const FoodMenu = ({
   navigation,
@@ -45,26 +46,28 @@ const FoodMenu = ({
 }: {
   navigation: any;
   mealList?: MealProps[];
-}) => (
-  <View>
-    <FlatList
-      style={styles.flatListWrapper}
-      /* eslint-disable-next-line react-native/no-inline-styles */
-      contentContainerStyle={{
-        alignItems: 'center',
-      }}
-      data={mealList}
-      renderItem={item => (
-        <Meal
-          key={item.item.productId}
-          item={item.item}
-          onPress={() => navigation.navigate('MealDetail', {item: item.item})}
-        />
-      )}
-      numColumns={2}
-    />
-  </View>
-);
+}) => {
+  return (
+    <View>
+      <FlatList
+        style={styles.flatListWrapper}
+        /* eslint-disable-next-line react-native/no-inline-styles */
+        contentContainerStyle={{
+          alignItems: 'center',
+        }}
+        data={mealList}
+        renderItem={item => (
+          <Meal
+            key={item.item.productId}
+            item={item.item}
+            onPress={() => navigation.navigate('MealDetail', {item: item.item})}
+          />
+        )}
+        numColumns={2}
+      />
+    </View>
+  );
+};
 
 const StarRating = ({rating}: any) => {
   const renderStars = () => {
@@ -160,11 +163,6 @@ const Meals = ({navigation}: any) => {
     size: 20,
   });
   const [index, setIndex] = React.useState(0);
-  const [routes] = React.useState([
-    {key: CategoryTypes.NEW, title: 'Mới'},
-    {key: CategoryTypes.BEST_SELLER, title: 'Bán chạy'},
-    {key: CategoryTypes.FAVORITE, title: 'Được yêu thích'},
-  ]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
@@ -174,7 +172,11 @@ const Meals = ({navigation}: any) => {
   const [showTabView, setShowTabView] = useState(true);
   const [fromAmount, setFromAmount] = useState<string>('');
   const [toAmount, setToAmount] = useState<string>('');
-
+  const [mealLists, setMealLists] = useState<any>(null);
+  const [routes, setRoutes] = useState<any>([]);
+  // const [mealList, setMealList] = useState<MealProps[] | undefined>(undefined);
+  const {data: category} = useCategory();
+  console.log(category);
   const filterMealLists = (query: string) => {
     const filteredNewMealList = newMealList?.filter(meal =>
       meal.name.toLowerCase().includes(query.toLowerCase()),
@@ -229,6 +231,41 @@ const Meals = ({navigation}: any) => {
     setFromAmount('');
     setSelectedRate(null);
   };
+  const getMeals = async (categoryId: number) => {
+    console.log('categoryIdddddddd', categoryId);
+    try {
+      const res = await getProductList({
+        categoryId,
+        sortType: CategoryTypes.NEW,
+        page: 1,
+        size: 5,
+      });
+      if (res.result.content) {
+        console.log('MEAL_LIST:', res.result.content);
+        setMealLists(res.result.content);
+      }
+    } catch (err) {
+      console.log(JSON.stringify(err));
+    }
+  };
+  const renderScene = () => {
+    return <FoodMenu navigation={navigation} mealList={mealLists} />;
+  };
+  useEffect(() => {
+    if (category) {
+      const route = category?.map(cat => ({
+        key: cat.categoryId,
+        title: cat.categoryName,
+      }));
+      setRoutes(route);
+      getMeals(route[0].key);
+    }
+  }, [category]);
+  const handleIndexChange = (newIndex: number) => {
+    setIndex(newIndex);
+    const categoryId = routes[newIndex].key;
+    getMeals(categoryId);
+  };
   // @ts-ignore
   const searchbarRef = useRef<Searchbar>(null);
   useEffect(() => {
@@ -236,6 +273,44 @@ const Meals = ({navigation}: any) => {
       searchbarRef.current.focus();
     }
   }, []);
+  const renderUI = () => {
+    if (!mealLists) {
+      return <ActivityIndicator />;
+    }
+    if (mealLists && showTabView) {
+      return (
+        <TabView
+          // @ts-ignore
+          navigationState={{index, routes}}
+          renderScene={renderScene}
+          onIndexChange={handleIndexChange}
+          initialLayout={{width: 100, height: 100}}
+          renderTabBar={props => (
+            <TabBar
+              {...props}
+              indicatorStyle={styles.tabViewWrapper}
+              scrollEnabled={true}
+              activeColor={colors.color_primary}
+              inactiveColor={colors.color_sub_text}
+              style={{backgroundColor: 'transparent'}}
+              labelStyle={Typography.caption1}
+            />
+          )}
+        />
+      );
+    }
+    if (!showTabView) {
+      return (
+        <View style={styles.menuWrapper}>
+          {searchResults && searchResults?.length > 0 ? (
+            <FoodMenu navigation={navigation} mealList={searchResults} />
+          ) : (
+            <TextBase text="Không tìm thấy món ăn nào" textAlign="center" />
+          )}
+        </View>
+      );
+    }
+  };
   return (
     <SafeAreaView>
       <CustomModal
@@ -358,61 +433,7 @@ const Meals = ({navigation}: any) => {
             color={colors.color_black}
           />
         </View>
-        <View style={styles.menuWrapper}>
-          {showTabView ? (
-            <TabView
-              navigationState={{index, routes}}
-              renderScene={({route}: any) => {
-                switch (route.key) {
-                  case CategoryTypes.NEW:
-                    return (
-                      <FoodMenu
-                        navigation={navigation}
-                        mealList={newMealList}
-                      />
-                    );
-                  case CategoryTypes.BEST_SELLER:
-                    return (
-                      <FoodMenu
-                        navigation={navigation}
-                        mealList={bestSellerMealList}
-                      />
-                    );
-                  case CategoryTypes.FAVORITE:
-                    return (
-                      <FoodMenu
-                        navigation={navigation}
-                        mealList={favMealList}
-                      />
-                    );
-                  default:
-                    return null;
-                }
-              }}
-              onIndexChange={setIndex}
-              initialLayout={{width: 100}}
-              renderTabBar={props => (
-                <TabBar
-                  {...props}
-                  indicatorStyle={styles.tabViewWrapper}
-                  scrollEnabled={true}
-                  activeColor={colors.color_primary}
-                  inactiveColor={colors.color_sub_text}
-                  style={{backgroundColor: 'transparent'}}
-                  labelStyle={Typography.caption1}
-                />
-              )}
-            />
-          ) : (
-            <View style={styles.menuWrapper}>
-              {searchResults && searchResults?.length > 0 ? (
-                <FoodMenu navigation={navigation} mealList={searchResults} />
-              ) : (
-                <TextBase text="Không tìm thấy món ăn nào" textAlign="center" />
-              )}
-            </View>
-          )}
-        </View>
+        <View style={styles.menuWrapper}>{renderUI()}</View>
       </View>
     </SafeAreaView>
   );
@@ -452,6 +473,7 @@ const styles = StyleSheet.create({
     elevation: 11,
   },
   flatListWrapper: {
+    height: '100%',
     backgroundColor: colors.color_background,
     width: '100%',
     marginBottom: 200,

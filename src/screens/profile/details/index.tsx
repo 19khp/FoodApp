@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Alert,
   Image,
@@ -30,8 +30,19 @@ import {colors} from '../../../common/constants/color';
 import {RadioButton} from '../../../common/components/radio-button';
 import ButtonBase from '../../../common/components/button';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {updateProfile, useProfile} from '../../../hooks/server/useProfile.ts';
-
+import {
+  getProfile,
+  imageUpload,
+  updateProfile,
+} from '../../../hooks/server/useProfile.ts';
+import {getPathResource} from '../../../common/utils/string.ts';
+import {ENVConfig} from '../../../common/config/env.ts';
+import {useFocusEffect} from '@react-navigation/native';
+import {UserProps} from '../../../models/user.ts';
+import {useSelector} from 'react-redux';
+import {selectUserInfo} from '../../../stores/authSlice.ts';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import ImagePicker from 'react-native-image-picker';
 const genders = [
   {
     id: 1,
@@ -43,40 +54,101 @@ const genders = [
   },
 ];
 const Details = () => {
-  const {data: userInfo} = useProfile();
-  const [selectedGender, setSelectedGender] = useState<number | undefined>(
-    userInfo?.gender ? 0 : 1,
-  );
-  const [name, setName] = useState(userInfo?.name);
-  const [number, setNumber] = useState(userInfo?.phone);
-  const [address, setAddress] = useState(userInfo?.address);
+  const user = useSelector(selectUserInfo);
+  const [userInfo, setUserInfo] = useState<UserProps>();
+  const [selectedGender, setSelectedGender] = useState<number | undefined>();
+  const [name, setName] = useState('');
+  const [image, setImage] = useState<any>();
+  const [imageName, setImageName] = useState<any>();
+  const [number, setNumber] = useState('');
+  const [address, setAddress] = useState('');
   const handleRadioButtonToggle = (index: number) => {
     setSelectedGender(index);
   };
-  const handleudpdateProfile = async () => {
-    try {
-      const res = await updateProfile({
-        id: userInfo?.id,
-        name: name,
-        email: userInfo?.email,
-        phone: number,
-        address: address,
-        gender: selectedGender === 0,
-        image: userInfo?.image,
-        password: userInfo?.password,
-      });
-      console.log({
+  const chooseImage = () => {
+    const options = {
+      mediaType: 'photo',
+      includeBase64: false,
+      maxHeight: 200,
+      maxWidth: 200,
+    };
+    // @ts-ignore
+    launchImageLibrary(options, async response => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.errorCode) {
+        console.log('ImagePicker Error: ', response.errorMessage);
+      } else if (
+        response.assets &&
+        response.assets[0].fileName &&
+        response.assets[0].uri
+      ) {
+        setImage(response.assets[0].fileName);
+        setImageName(response.assets[0].uri.replace('file://', ''));
 
-        id: userInfo?.id,
-        name: name,
-        email: userInfo?.email,
-        phone: number,
-        address: address,
-        gender: selectedGender === 0,
-        image: userInfo?.image,
-        password: userInfo?.password,
-      });
+        const formData = new FormData();
+        formData.append('image', response.assets[0]);
+        formData.append('entityType', 'USER');
+        console.log(response.assets[0]);
+        try {
+          const res = await imageUpload(formData);
+          if (res.result) {
+            console.log(res.result);
+          }
+        } catch (err) {
+          console.log(JSON.stringify(err));
+        }
+      }
+    });
+  };
+  const getUserProfile = async () => {
+    try {
+      const res = await getProfile(user?.id);
+      if (res.result) {
+        setUserInfo(res.result);
+        setName(res.result.name);
+        setNumber(res.result.phone);
+        setAddress(res.result.address);
+        setSelectedGender(res.result.gender ? 0 : 1);
+        setImageName(getPathResource(ENVConfig.PATH_USER, res.result.image));
+        console.log(
+          'IMAGE_FROM_SERVER',
+          getPathResource(ENVConfig.PATH_USER, res.result.image),
+        );
+      }
+    } catch (err) {
+      console.log(JSON.stringify(err));
+    }
+  };
+
+  useEffect(() => {
+    getUserProfile();
+  }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getUserProfile();
+    }, []),
+  );
+  const handleudpdateProfile = async () => {
+    if (!userInfo) {
+      return;
+    }
+    try {
+      const res = await updateProfile(
+        {
+          id: userInfo?.id,
+          name: name,
+          email: userInfo?.email,
+          phone: number,
+          address: address,
+          gender: selectedGender === 0,
+          image: image,
+        },
+        userInfo?.id,
+      );
       if (res) {
+        console.log('IMAGE_UPDATE_SUCCESS', res.result.image);
         Alert.alert('Cập nhật thông tin người dùng thành công');
       }
     } catch (err) {
@@ -95,7 +167,7 @@ const Details = () => {
               borderRadius: K_BORDER_RADIUS_100,
             }}
             source={{
-              uri: userInfo?.image,
+              uri: imageName,
             }}
           />
           <View
@@ -110,18 +182,9 @@ const Details = () => {
               name={'upload'}
               size={K_SIZE_16}
               color={colors.color_primary}
+              onPress={chooseImage}
             />
           </View>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            columnGap: K_MARGIN_8,
-            marginBottom: K_MARGIN_16,
-            width: '100%',
-          }}>
-          <TextBase text="Tên đăng nhập" />
-          <TextBase text={userInfo?.name} color={colors.color_sub_text} />
         </View>
         <View
           style={{

@@ -7,5 +7,6 @@ export const colors = {
   color_sub_primary: '#F47B0A',
   color_secondary: '#0038FF',
   color_sub_text_2: '#C7C7C7',
+  color_success: '#1A9F41',
 };
 export type Colors = typeof colors;

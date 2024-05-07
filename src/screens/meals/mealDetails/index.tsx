@@ -38,13 +38,9 @@ const MealDetail = ({route, navigation}: any) => {
   console.log(item);
   const {data: ratingDetail} = useRatingDetail(item.productId);
   const [quantity, setQuantity] = useState(1);
+  console.log(quantity);
   const cartUser = useSelector(selectCartUser);
   const addToCart = async (navigation: any) => {
-    console.log({
-      cartId: cartUser.cartId,
-      productId: item.productId,
-      quantitySold: quantity,
-    });
     try {
       const res = await updateCart({
         cartId: cartUser.cartId,

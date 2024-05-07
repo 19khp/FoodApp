@@ -69,12 +69,11 @@ export const request = <T = any>(
   const prefix = '';
   const configRequest = {
     ...config,
-    headers: {
-      // 'Content-Type': 'application/json',
-      // Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-      'Content-Type': 'application/json',
-      // 'Authorization': 'Basic QURNSU46QURNSU4='
-    },
+    // headers: {
+    //   // 'Content-Type': 'application/json',
+    //   // Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+    //   // 'Authorization': 'Basic QURNSU46QURNSU4='
+    // },
   };
   // const token = Authorization.getToken();
   // if (

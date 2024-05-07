@@ -8,6 +8,7 @@ import {
   K_MARGIN_6,
   K_PADDING_12,
   K_SIZE_12,
+  K_SIZE_16,
   TextBase,
 } from '../../common';
 // @ts-ignore
@@ -15,14 +16,16 @@ import logo from '../../assets/images/logo.png';
 import ButtonBase from '../../common/components/button';
 import useLogin from '../../hooks/server/useLogin.ts';
 import Spinner from 'react-native-loading-spinner-overlay';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const Login = ({navigation}: any) => {
-  const [email, setEmail] = useState('lethehieu151098@gmail.com');
-  const [password, setPassword] = useState('22222');
+  const [email, setEmail] = useState('Khoa19@gmail.com');
+  const [password, setPassword] = useState('Khoa');
   const [emailError, setEmailError] = useState('');
   const [isEmailValid, setIsEmailValid] = useState(false);
   const [isPasswordValid, setIsPasswordValid] = useState(false);
+  const [securePassword, setSecurePassword] = useState<boolean>(true);
   const {handleLogin, loading} = useLogin();
   const handleEmailChange = (text: string) => {
     setEmail(text);
@@ -57,14 +60,23 @@ const Login = ({navigation}: any) => {
                 {emailError}
               </TextBase>
             ) : null}
-            <TextInput
-              style={styles.input}
-              placeholder="Mật khẩu"
-              placeholderTextColor={colors.color_sub_text}
-              secureTextEntry={true}
-              value={password}
-              onChangeText={handlePasswordChange}
-            />
+
+            <View style={styles.input}>
+              <TextInput
+                style={{width: '95%'}}
+                secureTextEntry={securePassword}
+                placeholder="Nhập mật khẩu"
+                placeholderTextColor={colors.color_sub_text}
+                value={password}
+                onChangeText={handlePasswordChange}
+              />
+              <MaterialCommunityIcons
+                name={`${securePassword ? 'eye' : 'eye-off'}`}
+                size={K_SIZE_16}
+                onPress={() => setSecurePassword(!securePassword)}
+                color={colors.color_sub_text}
+              />
+            </View>
             <TextBase
               text="Quên mật khẩu?"
               color={colors.color_primary}
@@ -112,12 +124,14 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   input: {
+    flexDirection: 'row',
     padding: K_PADDING_12,
     color: colors.color_black,
     borderBottomWidth: K_BORDER_WIDTH_1,
     borderColor: colors.color_sub_text_2,
     marginBottom: 10,
     width: '100%',
+    justifyContent: 'space-between',
   },
   inputError: {
     borderColor: colors.color_primary,

@@ -101,7 +101,7 @@ const Index = ({navigation}: any) => {
                   bottom: K_PADDING_40,
                 }}>
                 <TextBase
-                  text={cart?.cartDetailDtos.length.toString()}
+                  text={cart?.cartDetailDtos.length.toString() || '0'}
                   color={colors.color_white}
                   fontSize={K_FONT_SIZE_10}
                 />

@@ -11,6 +11,12 @@ export const PAYMENT_METHOD = {
   CASH: 'CASH',
   PAYPAL: 'PAYPAL',
 };
+export const ORDER_STATUS = {
+  PENDING_PAYMENT: 1,
+  PAID: 2,
+  CANCELLED: 3,
+  ALL: 4,
+};
 export const K_SIZE_0 = 0;
 export const K_SIZE_1 = 1;
 export const K_SIZE_2 = 2;

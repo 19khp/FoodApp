@@ -1,5 +1,10 @@
 import {BASE_URL, request} from '../../network/service.ts';
-import {HistoryDetail, HistoryResult} from '../../models/history.ts';
+import {
+  HistoryDetail,
+  HistoryResult,
+  RatingMealReq,
+  RatingMealRes,
+} from '../../models/history.ts';
 
 export const getHistory = (email: string) =>
   request<HistoryResult>('get', `${BASE_URL}/orders/users/${email}`, {
@@ -13,3 +18,5 @@ export const deteleHistory = (orderId: number) =>
     'post',
     `${BASE_URL}/orders/${orderId}?orderStatus=CANCELLED`,
   ).then(r => r);
+export const ratingMeal = (params: RatingMealReq) =>
+  request<RatingMealRes>('post', `${BASE_URL}/rates`, params).then(r => r);

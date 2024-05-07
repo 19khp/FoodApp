@@ -51,3 +51,33 @@ interface OderDetailDtos {
     rating: number;
   };
 }
+export interface RatingMealReq {
+  rating: number;
+  productId: number;
+  userId: number;
+  comment: string;
+}
+export interface RatingMealRes {
+  id: number;
+  rating: number;
+  comment: string;
+  rateDate: string;
+  user: UserProps;
+  product: {
+    productId: number;
+    name: string;
+    quantity: number;
+    price: number;
+    discount: number;
+    image: string;
+    description: string;
+    enteredDate: string;
+    status: boolean;
+    sold: number;
+    category: {
+      categoryId: number;
+      categoryName: string;
+      image: string;
+    };
+  };
+}

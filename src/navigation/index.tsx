@@ -41,6 +41,7 @@ import {useCart} from '../hooks/server/useCart.ts';
 import {selectIsUpdateCart, setIsUpdateCart} from '../stores/checkoutSlice.ts';
 import CheckoutResult from '../screens/checkout/checkoutResult';
 import HistoryDetails from "../screens/history/details";
+import RatingMeal from "../screens/history/rating";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -371,6 +372,21 @@ const Navigation = () => {
           component={HistoryDetails}
           options={({navigation}) => ({
             title: 'Chi tiết món ăn mua',
+            headerShown: true,
+            headerTitleAlign: 'center',
+            headerTitleStyle: {fontSize: K_FONT_SIZE_17},
+            headerBackTitleVisible: false,
+            headerStyle: {backgroundColor: colors.color_background},
+            headerShadowVisible: false,
+            headerBackVisible: false,
+            headerLeft: () => <CustomBackButton navigation={navigation} />,
+          })}
+        />
+        <Stack.Screen
+          name="RatingMeal"
+          component={RatingMeal}
+          options={({navigation}) => ({
+            title: 'Đánh giá món ăn',
             headerShown: true,
             headerTitleAlign: 'center',
             headerTitleStyle: {fontSize: K_FONT_SIZE_17},

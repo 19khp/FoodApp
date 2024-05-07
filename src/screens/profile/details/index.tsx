@@ -39,8 +39,8 @@ import {getPathResource} from '../../../common/utils/string.ts';
 import {ENVConfig} from '../../../common/config/env.ts';
 import {useFocusEffect} from '@react-navigation/native';
 import {UserProps} from '../../../models/user.ts';
-import {useSelector} from 'react-redux';
-import {selectUserInfo} from '../../../stores/authSlice.ts';
+import {useDispatch, useSelector} from 'react-redux';
+import {selectUserInfo, setIsUpdateProfile} from '../../../stores/authSlice.ts';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import ImagePicker from 'react-native-image-picker';
 const genders = [
@@ -53,13 +53,14 @@ const genders = [
     name: 'Nữ',
   },
 ];
-const Details = () => {
+const Details = ({navigation}: any) => {
   const user = useSelector(selectUserInfo);
   const [userInfo, setUserInfo] = useState<UserProps>();
   const [selectedGender, setSelectedGender] = useState<number | undefined>();
   const [name, setName] = useState('');
   const [image, setImage] = useState<any>();
   const [imageName, setImageName] = useState<any>();
+  const dispatch = useDispatch();
   const [number, setNumber] = useState('');
   const [address, setAddress] = useState('');
   const handleRadioButtonToggle = (index: number) => {
@@ -87,9 +88,13 @@ const Details = () => {
         setImageName(response.assets[0].uri.replace('file://', ''));
 
         const formData = new FormData();
-        formData.append('image', response.assets[0]);
+        formData.append('file', {
+          uri: response.assets[0].uri,
+          type: response.assets[0].type,
+          name: response.assets[0].fileName,
+        });
         formData.append('entityType', 'USER');
-        console.log(response.assets[0]);
+        console.log('File selected:', response.assets[0]);
         try {
           const res = await imageUpload(formData);
           if (res.result) {
@@ -148,8 +153,14 @@ const Details = () => {
         userInfo?.id,
       );
       if (res) {
+        dispatch(setIsUpdateProfile(true));
         console.log('IMAGE_UPDATE_SUCCESS', res.result.image);
-        Alert.alert('Cập nhật thông tin người dùng thành công');
+        Alert.alert('Thông báo', 'Cập nhật thông tin người dùng thành công', [
+          {
+            text: 'Đồng ý',
+            onPress: () => navigation.goBack(),
+          },
+        ]);
       }
     } catch (err) {
       Alert.alert('Cập nhật thông tin người dùng không thành công');

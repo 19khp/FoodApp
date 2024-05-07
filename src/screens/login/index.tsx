@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useEffect, useState } from "react";
 import {Image, StyleSheet, TextInput, View} from 'react-native';
 import {colors} from '../../common/constants/color';
 import {
@@ -20,7 +20,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const Login = ({navigation}: any) => {
-  const [email, setEmail] = useState('Khoa19@gmail.com');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('Khoa');
   const [emailError, setEmailError] = useState('');
   const [isEmailValid, setIsEmailValid] = useState(false);
@@ -38,7 +38,12 @@ const Login = ({navigation}: any) => {
     setPassword(text);
     setIsPasswordValid(text.trim() !== '');
   };
-
+  useEffect(() => {
+    setEmail('Khoa19@gmail.com');
+    setPassword('Khoa');
+    setIsEmailValid(true);
+    setIsPasswordValid(true);
+  }, []);
   const isButtonEnabled = isEmailValid && isPasswordValid;
   return (
     <View style={styles.container}>

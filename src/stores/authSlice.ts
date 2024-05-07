@@ -5,12 +5,14 @@ import {CartUserRes} from '../models/user.ts';
 
 interface AuthState {
   isLogin: boolean;
+  isUpdateProfile: boolean;
   userInfo: LoginRes;
   cartUser: CartUserRes;
 }
 
 const initialState: AuthState = {
   isLogin: false,
+  isUpdateProfile: false,
   userInfo: {
     id: 0,
     name: '',
@@ -45,6 +47,9 @@ export const authSlice = createSlice({
     setIsLogin: (state, action: PayloadAction<boolean>) => {
       state.isLogin = action.payload;
     },
+    setIsUpdateProfile: (state, action: PayloadAction<boolean>) => {
+      state.isUpdateProfile = action.payload;
+    },
     setUserInfo: (state, action: PayloadAction<LoginRes>) => {
       state.userInfo = action.payload;
     },
@@ -54,11 +59,14 @@ export const authSlice = createSlice({
   },
 });
 
-export const {setIsLogin, setUserInfo, setCartUser} = authSlice.actions;
+export const {setIsLogin, setUserInfo, setCartUser, setIsUpdateProfile} =
+  authSlice.actions;
 
 // Selector to retrieve token from state
 export const selectIsLogin = (state: RootState) => state.auth.isLogin;
 export const selectUserInfo = (state: RootState) => state.auth.userInfo;
 export const selectCartUser = (state: RootState) => state.auth.cartUser;
+export const selectIsUpdateProfile = (state: RootState) =>
+  state.auth.isUpdateProfile;
 
 export default authSlice.reducer;

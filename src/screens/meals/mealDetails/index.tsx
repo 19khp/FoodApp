@@ -30,7 +30,7 @@ import {setIsUpdateCart} from '../../../stores/checkoutSlice.ts';
 import {getPathResource} from '../../../common/utils/string.ts';
 import {ENVConfig} from '../../../common/config/env.ts';
 import {updateCart} from '../../../hooks/server/cart.ts';
-import {selectCartUser} from '../../../stores/authSlice.ts';
+import { selectCartUser, selectUserInfo } from "../../../stores/authSlice.ts";
 
 const MealDetail = ({route, navigation}: any) => {
   const {item} = route.params;

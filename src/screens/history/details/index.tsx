@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
+  TextInput,
   View,
 } from 'react-native';
 import {
@@ -13,11 +14,16 @@ import {
   K_FONT_SIZE_14,
   K_FONT_SIZE_15,
   K_MARGIN_10,
+  K_MARGIN_12,
   K_MARGIN_16,
   K_MARGIN_32,
   K_MARGIN_4,
+  K_MARGIN_6,
+  K_MARGIN_60,
   K_PADDING_20,
   K_PADDING_32,
+  K_SIZE_120,
+  K_SIZE_40,
   ORDER_STATUS,
   TextBase,
 } from '../../../common';
@@ -40,6 +46,7 @@ const HistoryDetails = ({route, navigation}: any) => {
       try {
         const res = await getHistoryDetails(item.ordersId);
         if (res.result) {
+          console.log(res.result);
           console.log(res.result);
           setDetail(res.result);
         } else {
@@ -128,6 +135,19 @@ const HistoryDetails = ({route, navigation}: any) => {
                   color={colors.color_primary}>
                   Tổng: {Utils.formatCurrency(meal?.price * meal.quantity)}
                 </TextBase>
+                {detail?.orderDto.status === 2 && (
+                  <ButtonBase
+                    title={'Đánh giá'}
+                    style={{width: K_SIZE_120, marginTop: K_MARGIN_12}}
+                    marginHorizontal={K_MARGIN_16}
+                    marginVertical={K_MARGIN_6}
+                    fontSize={K_FONT_SIZE_12}
+                    buttonColor={colors.color_sub_text_2}
+                    onPress={() =>
+                      navigation.navigate('RatingMeal', {item: meal})
+                    }
+                  />
+                )}
               </View>
             </View>
           ))}

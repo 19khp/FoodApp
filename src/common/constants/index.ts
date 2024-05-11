@@ -1,5 +1,22 @@
 import {fontScale, sizeScale} from '../scale';
 
+export const CategoryTypes = {
+  BEST_SELLER: 'BEST_SELLER',
+  FAVORITE: 'FAVORITE',
+  NEW: 'NEW',
+  PRICE_LOW_TO_HIGH: 'PRICE_LOW_TO_HIGH',
+  PRICE_HIGH_TO_LOW: 'PRICE_HIGH_TO_LOW',
+};
+export const PAYMENT_METHOD = {
+  CASH: 'CASH',
+  PAYPAL: 'PAYPAL',
+};
+export const ORDER_STATUS = {
+  PENDING_PAYMENT: 1,
+  PAID: 2,
+  CANCELLED: 3,
+  ALL: 4,
+};
 export const K_SIZE_0 = 0;
 export const K_SIZE_1 = 1;
 export const K_SIZE_2 = 2;
@@ -195,6 +212,8 @@ export const K_MARGIN_40 = 40;
 export const K_MARGIN_42 = 42;
 export const K_MARGIN_60 = 60;
 export const K_MARGIN_80 = 80;
+export const K_MARGIN_100 = 100;
+export const K_MARGIN_120 = 120;
 
 //////////////////////////////////////////////////////
 

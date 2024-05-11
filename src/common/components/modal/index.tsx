@@ -20,10 +20,12 @@ const CustomModal = ({
   visible,
   onClose,
   children,
+  closeVisible = true,
 }: {
   visible?: boolean;
   onClose: () => void;
   children?: any;
+  closeVisible?: boolean;
 }) => {
   const panResponder = useRef(
     PanResponder.create({
@@ -47,9 +49,11 @@ const CustomModal = ({
         onPress={onClose}>
         <View {...panResponder.panHandlers} style={styles.modalView}>
           <View style={styles.topLine} />
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <MaterialCommunityIcons name="close" size={K_SIZE_30} />
-          </TouchableOpacity>
+          {closeVisible && (
+            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+              <MaterialCommunityIcons name="close" size={K_SIZE_30} />
+            </TouchableOpacity>
+          )}
           {children}
         </View>
       </TouchableOpacity>
@@ -65,7 +69,8 @@ const styles = StyleSheet.create({
   },
   modalView: {
     backgroundColor: 'white',
-    borderRadius: K_BORDER_RADIUS_20,
+    borderTopLeftRadius: K_BORDER_RADIUS_20,
+    borderTopRightRadius: K_BORDER_RADIUS_20,
     paddingHorizontal: K_PADDING_24,
     paddingTop: K_PADDING_12,
     elevation: 5,

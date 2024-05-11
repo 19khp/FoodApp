@@ -21,12 +21,18 @@ export class Utils {
     const weight = fontWeight ? fontWeights[fontWeight] : 'Regular';
     return `${FontDefault.primary}-${weight}`;
   }
-  public static formatCurrency = (num: number | string | undefined | null) => {
+  public static formatCurrency = (
+    num: number | string | undefined | null,
+    noUnit?: boolean,
+  ) => {
     if (!num) {
-      return 0;
+      return 0 + ' ' + currency_const.vnd;
     }
 
     if (typeof num === 'string') {
+      if (noUnit) {
+        return num.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+      }
       return (
         num.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + ' ' + currency_const.vnd
       );

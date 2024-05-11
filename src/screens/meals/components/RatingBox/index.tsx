@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  K_BORDER_RADIUS_26,
   K_BORDER_WIDTH_1,
   K_MARGIN_10,
   K_MARGIN_8,
@@ -8,11 +9,13 @@ import {
   TextBase,
 } from '../../../../common';
 import {colors} from '../../../../common/constants/color';
-import {View} from 'react-native';
+import {Image, View} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import RatingStar from '../../../../common/components/rating-star';
+import {getPathResource} from '../../../../common/utils/string.ts';
+import {ENVConfig} from '../../../../common/config/env.ts';
 
-const RatingBox = ({isLast}: {isLast?: boolean}) => {
+const RatingBox = ({isLast, rating}: {isLast?: boolean; rating: any}) => {
   return (
     <View
       style={{
@@ -29,19 +32,25 @@ const RatingBox = ({isLast}: {isLast?: boolean}) => {
             justifyContent: 'center',
             marginRight: K_MARGIN_8,
           }}>
-          <MaterialCommunityIcons
-            name="account-circle-outline"
-            size={K_SIZE_32}
-            color={colors.color_sub_text}
+          <Image
+            source={{
+              uri: getPathResource(ENVConfig.PATH_USER, rating.userImage),
+            }}
+            style={{
+              width: K_SIZE_32,
+              height: K_SIZE_32,
+              borderRadius: K_BORDER_RADIUS_26,
+              objectFit: 'cover',
+            }}
           />
         </View>
 
         <View>
-          <TextBase>Pham Van A</TextBase>
-          <RatingStar />
+          <TextBase>{rating.userName}</TextBase>
+          <RatingStar key={rating.id} star={rating.rating} />
         </View>
       </View>
-      <TextBase preset="title2">Ngon xỉu</TextBase>
+      <TextBase preset="title2">{rating.comment}</TextBase>
     </View>
   );
 };

@@ -6,11 +6,16 @@ import {
   K_BORDER_RADIUS_26,
   K_FONT_SIZE_10,
   K_FONT_SIZE_15,
+  K_MARGIN_10,
   K_MARGIN_12,
+  K_PADDING_12,
+  K_PADDING_24,
   TextBase,
 } from '../../../../common';
 import {colors} from '../../../../common/constants/color';
 import {Utils} from '../../../../common/utils';
+import {getPathResource} from '../../../../common/utils/string.ts';
+import {ENVConfig} from '../../../../common/config/env.ts';
 
 const Meal = ({
   item,
@@ -25,9 +30,9 @@ const Meal = ({
         <View style={styles.mealContainer}>
           <Image
             /* eslint-disable-next-line react-native/no-inline-styles */
-            style={{width: '100%', height: '40%'}}
+            style={{width: '100%', height: '40%', objectFit: 'contain'}}
             source={{
-              uri: item.image,
+              uri: getPathResource(ENVConfig.PATH_PRODUCT, item.image),
             }}
           />
           <View
@@ -37,6 +42,7 @@ const Meal = ({
               marginTop: K_MARGIN_12,
             }}>
             <TextBase
+              numberOfLines={3}
               preset="title1"
               textAlign={'center'}
               fontSize={K_FONT_SIZE_15}>
@@ -47,7 +53,7 @@ const Meal = ({
               textAlign={'center'}
               fontSize={K_FONT_SIZE_10}
               color={colors.color_primary}
-              style={{marginTop: K_MARGIN_12}}>
+              style={{marginTop: K_MARGIN_10}}>
               {Utils.formatCurrency(item.price)}
             </TextBase>
           </View>
@@ -72,6 +78,7 @@ const styles = StyleSheet.create({
     height: 200,
     width: 150,
     alignItems: 'center',
+    paddingBottom: K_PADDING_24,
   },
 });
 

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useEffect, useState } from "react";
 import {Image, StyleSheet, TextInput, View} from 'react-native';
 import {colors} from '../../common/constants/color';
 import {
@@ -8,21 +8,25 @@ import {
   K_MARGIN_6,
   K_PADDING_12,
   K_SIZE_12,
-  K_SIZE_32,
+  K_SIZE_16,
   TextBase,
 } from '../../common';
 // @ts-ignore
 import logo from '../../assets/images/logo.png';
 import ButtonBase from '../../common/components/button';
+import useLogin from '../../hooks/server/useLogin.ts';
+import Spinner from 'react-native-loading-spinner-overlay';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const Login = ({navigation}: any) => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState('Khoa');
   const [emailError, setEmailError] = useState('');
   const [isEmailValid, setIsEmailValid] = useState(false);
   const [isPasswordValid, setIsPasswordValid] = useState(false);
-
+  const [securePassword, setSecurePassword] = useState<boolean>(true);
+  const {handleLogin, loading} = useLogin();
   const handleEmailChange = (text: string) => {
     setEmail(text);
     const isValid = emailRegex.test(text);
@@ -34,10 +38,16 @@ const Login = ({navigation}: any) => {
     setPassword(text);
     setIsPasswordValid(text.trim() !== '');
   };
-
+  useEffect(() => {
+    setEmail('Khoa19@gmail.com');
+    setPassword('Khoa');
+    setIsEmailValid(true);
+    setIsPasswordValid(true);
+  }, []);
   const isButtonEnabled = isEmailValid && isPasswordValid;
   return (
     <View style={styles.container}>
+      <Spinner visible={loading} />
       <View style={styles.contentContainer}>
         <Image source={logo} style={styles.image} resizeMode="contain" />
         <View style={{width: '100%', padding: K_MARGIN_32}}>
@@ -46,6 +56,7 @@ const Login = ({navigation}: any) => {
             <TextInput
               style={[styles.input, emailError ? styles.inputError : null]}
               placeholder="Email"
+              placeholderTextColor={colors.color_sub_text}
               value={email}
               onChangeText={handleEmailChange}
             />
@@ -54,13 +65,23 @@ const Login = ({navigation}: any) => {
                 {emailError}
               </TextBase>
             ) : null}
-            <TextInput
-              style={styles.input}
-              placeholder="Mật khẩu"
-              secureTextEntry={true}
-              value={password}
-              onChangeText={handlePasswordChange}
-            />
+
+            <View style={styles.input}>
+              <TextInput
+                style={{width: '95%'}}
+                secureTextEntry={securePassword}
+                placeholder="Nhập mật khẩu"
+                placeholderTextColor={colors.color_sub_text}
+                value={password}
+                onChangeText={handlePasswordChange}
+              />
+              <MaterialCommunityIcons
+                name={`${securePassword ? 'eye' : 'eye-off'}`}
+                size={K_SIZE_16}
+                onPress={() => setSecurePassword(!securePassword)}
+                color={colors.color_sub_text}
+              />
+            </View>
             <TextBase
               text="Quên mật khẩu?"
               color={colors.color_primary}
@@ -73,7 +94,7 @@ const Login = ({navigation}: any) => {
               title="Đăng nhập"
               style={{paddingHorizontal: K_PADDING_12}}
               disabled={!isButtonEnabled}
-              onPress={() => navigation.navigate('BottomStack')}
+              onPress={() => handleLogin({email, password}, navigation)}
             />
           </View>
         </View>
@@ -108,16 +129,20 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   input: {
-    height: K_SIZE_32,
+    flexDirection: 'row',
+    padding: K_PADDING_12,
+    color: colors.color_black,
     borderBottomWidth: K_BORDER_WIDTH_1,
     borderColor: colors.color_sub_text_2,
     marginBottom: 10,
     width: '100%',
+    justifyContent: 'space-between',
   },
   inputError: {
     borderColor: colors.color_primary,
   },
   errorText: {
+    fontWeight: 'normal',
     color: colors.color_primary,
   },
 });

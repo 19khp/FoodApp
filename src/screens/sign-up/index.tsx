@@ -50,12 +50,14 @@ const SignUp = ({navigation}: any) => {
             <TextInput
               style={styles.input}
               placeholder="Tên"
+              placeholderTextColor={colors.color_sub_text}
               value={name}
               onChangeText={handleNameChange}
             />
             <TextInput
               style={[styles.input, emailError ? styles.inputError : null]}
               placeholder="Email"
+              placeholderTextColor={colors.color_sub_text}
               value={email}
               onChangeText={handleEmailChange}
             />
@@ -67,6 +69,7 @@ const SignUp = ({navigation}: any) => {
             <TextInput
               style={styles.input}
               placeholder="Mật khẩu"
+              placeholderTextColor={colors.color_sub_text}
               secureTextEntry={true}
               value={password}
               onChangeText={handlePasswordChange}
@@ -108,11 +111,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: K_MARGIN_32,
   },
   inputContainer: {
+    color: colors.color_black,
     width: '100%',
     marginTop: 20,
   },
   input: {
-    height: K_SIZE_32,
+    padding: K_PADDING_12,
     borderBottomWidth: K_BORDER_WIDTH_1,
     borderColor: colors.color_sub_text_2,
     marginBottom: 10,

@@ -1,5 +1,11 @@
-import React, {useState} from 'react';
-import {Image, SafeAreaView, StyleSheet, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  Image,
+  SafeAreaView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {
   K_BORDER_RADIUS_20,
   K_BORDER_WIDTH_1,
@@ -11,10 +17,13 @@ import {
   K_MARGIN_16,
   K_PADDING_12,
   K_PADDING_16,
+  K_PADDING_20,
   K_PADDING_24,
   K_PADDING_32,
+  K_PADDING_60,
   K_SIZE_10,
   K_SIZE_20,
+  K_SIZE_24,
   K_SIZE_60,
   K_SIZE_SCALE_15,
   TextBase,
@@ -22,6 +31,20 @@ import {
 import {colors} from '../../common/constants/color';
 import {RadioButton} from '../../common/components/radio-button';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import CustomModal from '../../common/components/modal';
+import ButtonBase from '../../common/components/button';
+import useLogout from '../../hooks/server/useLogout.ts';
+import Spinner from 'react-native-loading-spinner-overlay';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  selectIsLogin,
+  selectIsUpdateProfile,
+  setIsUpdateProfile,
+} from '../../stores/authSlice.ts';
+import {useProfile} from '../../hooks/server/useProfile.ts';
+import {getPathResource} from '../../common/utils/string.ts';
+import {ENVConfig} from '../../common/config/env.ts';
+
 export const paymentMethods = [
   {
     id: 1,
@@ -59,52 +82,137 @@ export const paymentMethods = [
     ),
   },
 ];
-const Index = () => {
+const Index = ({navigation}: any) => {
   const [selectedMethod, setSelectedMethod] = useState<number | null>(0);
-
+  const [modalVisible, setModalVisible] = useState(false);
+  const {handleLogout, loading} = useLogout();
+  const isLogin = useSelector(selectIsLogin);
+  const isUpdateProfile = useSelector(selectIsUpdateProfile);
+  const dispatch = useDispatch();
+  const {data: userInfo, refetch: refetchUser} = useProfile();
   const handleRadioButtonToggle = (index: number) => {
     setSelectedMethod(index);
   };
+  useEffect(() => {
+    if (isUpdateProfile) {
+      refetchUser();
+      dispatch(setIsUpdateProfile(false));
+    }
+  }, [dispatch, isUpdateProfile, refetchUser]);
   return (
     <SafeAreaView>
-      <View style={{padding: K_PADDING_32}}>
-        <View>
-          <View>
-            <TextBase preset="title1" fontSize={K_FONT_SIZE_17}>
-              Thông tin
-            </TextBase>
+      <Spinner visible={loading} />
+      <CustomModal
+        visible={modalVisible}
+        closeVisible={false}
+        onClose={() => setModalVisible(false)}>
+        <View style={{marginBottom: K_PADDING_60}}>
+          <View
+            onTouchEnd={() => {
+              navigation.navigate('ProfileDetails');
+              setModalVisible(false);
+            }}
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              paddingTop: K_PADDING_20,
+            }}>
+            <TextBase text="Sửa thông tin" />
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={K_SIZE_24}
+              color={colors.color_black}
+            />
           </View>
-
-          <View style={styles.boxWrapper}>
-            <View style={styles.infoWrapper}>
-              <View>
-                <Image
-                  style={{
-                    width: K_SIZE_60,
-                    height: K_SIZE_60,
-                    borderRadius: K_SIZE_10,
-                  }}
-                  source={{
-                    uri: 'https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?q=80&w=2864&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                  }}
-                />
-              </View>
-              <View>
-                <TextBase preset="title1" fontSize={K_FONT_SIZE_15}>
-                  Wayne Rooney
-                </TextBase>
-                <TextBase preset="caption1" fontSize={K_FONT_SIZE_10}>
-                  phamkhoa@gmail.com
-                </TextBase>
-                <TextBase preset="caption1" fontSize={K_FONT_SIZE_10}>
-                  Số 20 Thái hà
-                </TextBase>
-              </View>
-            </View>
+          <View
+            onTouchEnd={() => {
+              navigation.navigate('ChangePassword');
+              setModalVisible(false);
+            }}
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              paddingTop: K_PADDING_20,
+            }}>
+            <TextBase text="Đổi mật khẩu" />
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={K_SIZE_24}
+              color={colors.color_black}
+            />
           </View>
         </View>
-        <View style={{height: K_SIZE_60}} />
-        <View>
+      </CustomModal>
+      <View style={{padding: K_PADDING_32}}>
+        {isLogin && (
+          <View>
+            <View>
+              <View
+                style={{
+                  justifyContent: 'space-between',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}>
+                <TextBase preset="title1" fontSize={K_FONT_SIZE_17}>
+                  Thông tin
+                </TextBase>
+                <TouchableOpacity onPress={() => setModalVisible(true)}>
+                  <TextBase
+                    text="Chỉnh sửa"
+                    fontSize={K_FONT_SIZE_10}
+                    color={colors.color_primary}
+                  />
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.boxWrapper}>
+                <View style={styles.infoWrapper}>
+                  <View>
+                    <Image
+                      style={{
+                        width: K_SIZE_60,
+                        height: K_SIZE_60,
+                        borderRadius: K_SIZE_10,
+                        objectFit: 'contain',
+                      }}
+                      source={{
+                        uri: getPathResource(
+                          ENVConfig.PATH_USER,
+                          userInfo?.image || 'avatar_default.jpg',
+                        ),
+                      }}
+                    />
+                  </View>
+                  <View style={{flex: 1}}>
+                    <TextBase
+                      preset="title1"
+                      fontSize={K_FONT_SIZE_15}
+                      style={{flexShrink: 1}}>
+                      {userInfo?.name}
+                    </TextBase>
+                    <TextBase
+                      preset="caption1"
+                      fontSize={K_FONT_SIZE_10}
+                      style={{flexShrink: 1}}>
+                      {userInfo?.email}
+                    </TextBase>
+                    <TextBase
+                      preset="caption1"
+                      fontSize={K_FONT_SIZE_10}
+                      style={{flexShrink: 1}}>
+                      Địa chỉ: {userInfo?.address}
+                    </TextBase>
+                  </View>
+                </View>
+              </View>
+            </View>
+            <View style={{height: K_SIZE_60}} />
+          </View>
+        )}
+
+        <View style={{marginBottom: K_PADDING_60}}>
           <TextBase preset="title1" fontSize={K_FONT_SIZE_17}>
             Phương thức thanh toán
           </TextBase>
@@ -141,6 +249,17 @@ const Index = () => {
             </View>
           </View>
         </View>
+        {isLogin ? (
+          <ButtonBase
+            title="Đăng xuất"
+            onPress={() => handleLogout(navigation)}
+          />
+        ) : (
+          <ButtonBase
+            title="Đăng nhập"
+            onPress={() => navigation.navigate('Login')}
+          />
+        )}
       </View>
     </SafeAreaView>
   );
